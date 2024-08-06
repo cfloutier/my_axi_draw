@@ -1,0 +1,15 @@
+accel: 75
+auto_rotate: false
+const_speed: false
+model: 5
+native_res_factor: 1016.0
+pen_pos_down: 60
+pen_pos_up: 30
+pen_rate_lower: 50
+pen_rate_raise: 75
+random_start: false
+reordering: 0
+report_time: false
+resolution: 1
+speed_pendown: 25
+speed_penup: 75
