@@ -10,6 +10,8 @@ from tools.fs import make_parent_dir
 
 def build_plot_ad() -> axidraw.AxiDraw:
     """ build ad interface and apply settings """
+
+    return None
     ad = axidraw.AxiDraw() # Create class instance
     ad.plot_setup()        # Run setup without input file
 

@@ -15,7 +15,7 @@
             "name": "Python Debugger: Test ui",
             "type": "debugpy",
             "request": "launch",
-            "program": "test_ui.py",
+            "program": "test_customtkinter.py",
             "console": "integratedTerminal"
         }
     ]
