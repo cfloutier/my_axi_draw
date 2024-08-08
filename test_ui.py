@@ -1,33 +1,8 @@
 #!/usr/bin/env python
 import time
 from pyaxidraw import axidraw
-from config import SETTINGS
-    
-def toggle_pen():
-    ad = build_plot_ad()
-    if not ad: 
-        return
-    ad.options.mode = "toggle"
-    ad.plot_run()          # Execute the command
-
-def pen_up():
-    ad = build_plot_ad()
-    if not ad: 
-        return
-    ad.options.mode = "manual"
-    ad.options.manual_cmd  = "raise_pen"
-    ad.plot_run()          # Execute the command
-
-def pen_down():
-    ad = build_plot_ad()
-    if not ad: 
-        return
-    ad.options.mode = "manual"
-    ad.options.manual_cmd  = "lower_pen"
-
-    # print(ad.options.__dict__)
-
-    ad.plot_run()          # Execute the command
+from config import SETTINGS, build_plot_ad
+import pen_commands as pen
 
 import tkinter as tk
 from tkinter import ttk
@@ -43,11 +18,11 @@ class PenControl(tk.LabelFrame):
         h_bt=3
         w_bt=20
 
-        button = tk.Button(self, text = "Toggle", command = toggle_pen, width=w_bt, height=h_bt)
+        button = tk.Button(self, text = "Toggle", command = pen.toggle_pen, width=w_bt, height=h_bt)
         button.pack(fill="x", padx=10, pady=5)
-        button = tk.Button(self, text = "Pen Up", command = pen_up, width=w_bt, height=h_bt)
+        button = tk.Button(self, text = "Pen Up", command = pen.pen_up, width=w_bt, height=h_bt)
         button.pack(fill="x", padx=10, pady=5)
-        button = tk.Button(self, text = "Pen Down", command = pen_down, width=w_bt, height=h_bt)
+        button = tk.Button(self, text = "Pen Down", command = pen.pen_down, width=w_bt, height=h_bt)
         button.pack(fill="x", padx=10, pady=5)
 
 class PenSettingsUI(tk.LabelFrame):

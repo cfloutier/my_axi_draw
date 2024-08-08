@@ -8,26 +8,6 @@ import yaml
 from pyaxidraw import axidraw
 from tools.fs import make_parent_dir
 
-def build_plot_ad() -> axidraw.AxiDraw:
-    """ build ad interface and apply settings """
-
-    return None
-    ad = axidraw.AxiDraw() # Create class instance
-    ad.plot_setup()        # Run setup without input file
-
-    SETTINGS.apply(ad)
-
-    return ad
-
-def build_interactive_ad() -> axidraw.AxiDraw:
-    """ build ad interface and apply settings """
-    ad = axidraw.AxiDraw() # Create class instance
-    ad.interactive()        # Run setup without input file
-
-    SETTINGS.apply(ad)
-    ad.update()
-
-    return ad
 
 class LocalSettings:
     """ overload of some of the standard settings """
@@ -59,8 +39,6 @@ class LocalSettings:
         # Effective motor resolution is approx. 1437 or 2874 steps per inch, in the two modes respectively.
         # Note that these resolutions are defined along the native axes of the machine (X+Y) and (X-Y),
         # not along the XY axes of the machine. This parameter chooses 8X or 16X motor microstepping.
-
-
         self.auto_rotate = False      # Auto-select portrait vs landscape orientation
                                     # Default: True
 
@@ -70,7 +48,6 @@ class LocalSettings:
                                     # 2: Full; Also allow path reversal
                                     # 4: None; Strictly preserve file order
 
-        
         self.random_start = False    # Randomize start locations of closed paths. Default False
 
         self.native_res_factor = 1016.0  # Motor resolution factor, steps per inch. Default: 1016.0
@@ -112,7 +89,7 @@ class LocalSettings:
     def save(self, name = None):
         file_path = self._file_path(name)
 
-        print(file_path)
+        # print(file_path)
 
         make_parent_dir(file_path)
 
