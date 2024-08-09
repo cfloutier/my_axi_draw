@@ -12,10 +12,10 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Python Debugger: Test ui",
+            "name": "Python Debugger: Main ui",
             "type": "debugpy",
             "request": "launch",
-            "program": "test_customtkinter.py",
+            "program": "main_ui.py",
             "console": "integratedTerminal"
         }
     ]

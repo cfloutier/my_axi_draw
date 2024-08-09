@@ -8,8 +8,58 @@ import yaml
 from pyaxidraw import axidraw
 from tools.fs import make_parent_dir
 
+class BaseSettings:
 
-class LocalSettings:
+    def _file_path(self, name = None):
+        if not name:
+            name = "default"
+
+        file_path = Path(__file__).parent / "settings" / (name + ".yml") 
+
+        return file_path
+
+    def _load(self, name = None):
+        file_path = self._file_path(name)
+        if not file_path.exists():
+           print("file not found")
+           return
+       
+        with open(file_path, 'r', encoding='UTF-8') as stream:
+            my_dict = yaml.load(stream, Loader=yaml.SafeLoader)
+            if my_dict is None:
+                print("error reading file")
+                return
+            
+            for key, value in my_dict.items(): 
+                setattr(self, key, value)
+
+    def _save(self, name = None):
+        file_path = self._file_path(name)
+
+        # print(file_path)
+
+        make_parent_dir(file_path)
+
+        with open(file_path, 'w', encoding='UTF-8') as stream:
+            yaml.dump(self.__dict__, stream=stream, sort_keys=True)
+
+    def __str__(self) -> str:
+        return str(self.__dict__)
+
+class InternalSettings:
+    """ 
+    settings used only for this app 
+    """
+
+    def __init__(self) -> None:
+
+        self.svg_file = None
+        self.profile_name = "default"
+
+    def save(self):
+        self._save("internal")
+
+class OverloadedSettings:
     """ overload of some of the standard settings """
 
     def __init__(self) -> None:
@@ -64,7 +114,7 @@ class LocalSettings:
 
     def _file_path(self, name = None):
         if not name:
-            name = "default"
+            name = INTERNAL_SETTINGS.profile_name
 
         file_path = Path(__file__).parent / "settings" / (name + ".yml") 
 
@@ -85,7 +135,6 @@ class LocalSettings:
             for key, value in my_dict.items(): 
                 setattr(self, key, value)
 
-  
     def save(self, name = None):
         file_path = self._file_path(name)
 
@@ -99,14 +148,14 @@ class LocalSettings:
     def __str__(self) -> str:
         return str(self.__dict__)
 
-
 # static attribute
-SETTINGS = LocalSettings()
+INTERNAL_SETTINGS = InternalSettings()
+SETTINGS = OverloadedSettings()
 
 if __name__ == "__main__":
     # test U
 
-    s = LocalSettings()
+    s = OverloadedSettings()
     print(s)
     s.save()
     print(s)
