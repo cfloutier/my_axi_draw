@@ -3,8 +3,8 @@ auto_rotate: false
 const_speed: false
 model: 5
 native_res_factor: 1016.0
-pen_pos_down: 38
-pen_pos_up: 24
+pen_pos_down: 63
+pen_pos_up: 11
 pen_rate_lower: 50
 pen_rate_raise: 75
 random_start: false

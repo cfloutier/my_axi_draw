@@ -26,7 +26,7 @@ class MainWindow(customtkinter.CTk):
 
         super().__init__()
 
-        self.title("my app")
+        self.title("My Axi Draw - Paperflou Tools")
         self.geometry("800x600")
 
         # self.grid_columnconfigure(index=0,)
