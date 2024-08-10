@@ -11,6 +11,8 @@ class SettingsFrame(BaseFrame):
         self.grid_columnconfigure(0, weight=100)
         self.first_pad_y = 2
         self._padx = 2
+        
+
 
         self.main_app = main_app
         self.col = 1
@@ -18,8 +20,8 @@ class SettingsFrame(BaseFrame):
         self.profile_combo.set(INTERNAL_SETTINGS.profile_name)
      
         # self.Button("Change Profile", self.load, inline=True)
-        self.Button("Save New", self.save, inline=True)
-        self.Button("Reset", self.reset, inline=True)
+        self.Button("Save New", self.save, inline=True, width=50)
+        self.Button("Reset", self.reset, inline=True, width=50)
 
     def on_profile_changed(self, profile_name):      
 

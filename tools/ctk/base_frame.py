@@ -41,7 +41,7 @@ class BaseFrame(ctk.CTkFrame):
 
     @property
     def padx(self):
-        return 10 
+        return self._padx 
 
     @property
     def pady(self):
@@ -57,8 +57,8 @@ class BaseFrame(ctk.CTkFrame):
         
         return sw
     
-    def Button(self, text, command, inline = False):   
-        sw = ctk.CTkButton(self, text=text, command=command, width=20)
+    def Button(self, text, command, inline = False, width=150):   
+        sw = ctk.CTkButton(self, text=text, command=command, width=width)
         if inline:
             sw.grid(row=self.row, column=self.col, padx=self.padx, pady=self.pady, sticky="w")
             self.col += 1

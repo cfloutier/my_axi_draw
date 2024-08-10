@@ -47,9 +47,9 @@ class MainWindow(ctk.CTk):
         # self.tab_view.grid(row=0, column=0, padx=5, pady=5, sticky="news")
         
 
-        # add the setting page
-        # self.settings_page = SettingsFrame(app, self)
-        # self.settings_page.pack(side="top", fill="both")
+        # add the setting page (one line)
+        self.settings_page = SettingsFrame(app, self)
+        self.settings_page.pack(side="top", fill="both")
 
         self.tab_view = TabView(master=self)
         self.tab_view.pack(fill="both", padx=5, pady=5)

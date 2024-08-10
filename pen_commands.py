@@ -45,6 +45,7 @@ class TracerCommands:
         self.report = ""
         self.start_time = 0
         self.dist_pen_total = 0
+        self.is_paused = False
 
     def toggle_pen(self):
 
@@ -83,7 +84,32 @@ class TracerCommands:
         
         ad.options.mode = "manual"
         ad.options.manual_cmd  = "lower_pen"
-        ad.plot_run()   # Execute the command
+        ad.plot_run()   # Execute the command 
+
+
+    def back_home(self):
+        if not self.is_paused or not self.ad:
+            self.is_paused = False
+            self.ad = None
+            return
+        
+        self.ad.options.mode = "res_home"
+        self.ad.plot_run()   # Execute the command 
+
+        self.ad = None
+        
+    def disable_motors(self):
+        # trace in progress
+        if self.ad:
+            return
+
+        ad = build_plot_ad()
+        if not ad: 
+            return
+        
+        ad.options.mode = "manual"
+        ad.options.manual_cmd  = "disable_xy"
+        ad.plot_run()   # Execute the command 
 
     def draw(self, file_path: Union[Path, str]):
 
@@ -91,31 +117,54 @@ class TracerCommands:
             print(f"drawing {abs_path}")
 
             self.start_time = time.time()
+            self.is_paused = False
 
-            self.ad = build_plot_ad(abs_path)
-            self.ad.options.preview = False
-            self.ad.options.report_time = True # Enable time and distance estimates
+            if not self.is_paused and not self.ad:
+                self.ad = build_plot_ad(abs_path)
+
+                self.ad.options.preview = False
+                self.ad.options.report_time = True # Enable time and distance estimates
+                self.ad.options.report_time = True # Enable time and distance estimates
+                self.ad.errors.code = 0
+            else:
+                self.ad.options.mode = "res_plot"
+                self.ad.plot_status.stopped = 0
+                self.ad.errors.code = 0
+
+
             # self.ad.options.progress= True
             self.report = None
         
             self.ad.plot_run()   # plot the document
 
             end_time = time.time()
-
             print_time = td_format(timedelta(seconds=end_time-self.start_time))
-            result = "----------------------- PRINT -----------------------------\n"
-            result += f"file : {abs_path}\n"
-            result += f"duration : {print_time}\n"
-            result += "----------------------------------------------------------\n"
+            
+            is_paused = self.ad.plot_status.stopped == 103
+
+            if is_paused:
+                result = "----------------------- PAUSED -----------------------------\n"
+                result += f"duration : {print_time}\n"
+                result += f"Press Run to restart \n"
+                result += "----------------------------------------------------------\n"
+                self.is_paused = True
+            else:
+                result = "----------------------- ENDED -----------------------------\n"
+                result += f"file : {abs_path}\n"
+                result += f"duration : {print_time}\n"
+                result += "----------------------------------------------------------\n"
+                self.is_paused = False
+                self.ad = None
 
             self.report = result
-            self.ad = None
+            
             self.start_time = 0
 
         if not isinstance(file_path, Path):
             file_path = Path(file_path)
 
-        if self.ad:
+        if self.ad and not self.is_paused:
+            self.ad = None
             return
 
         abs_path = str(file_path.resolve())

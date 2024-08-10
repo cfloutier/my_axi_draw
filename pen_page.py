@@ -75,11 +75,11 @@ class PenSettings(BaseFrame):
         
         if self.prev_up != SETTINGS.pen_pos_up:
             self.prev_up = SETTINGS.pen_pos_up
-            pen.pen_up()
+            TRACER.pen_up()
 
         if self.prev_down != SETTINGS.pen_pos_down:
             self.prev_down = SETTINGS.pen_pos_down
-            pen.pen_down()
+            TRACER.pen_down()
 
         self.after(500, self.set_height)
 

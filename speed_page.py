@@ -49,7 +49,7 @@ class SpeedPage(BaseFrame):
 
         self.accel_l.configure(text=f"Acceleration rate factor : {int(SETTINGS.accel)} (75)")
         self.pen_rate_raise_l.configure(text=f"Rate of raising pen : {int(SETTINGS.pen_rate_raise)} (75)")
-        self.pen_rate_lower_l.configure(text=f"Rate of raising pen : {int(SETTINGS.pen_rate_lower)} (50)")
+        self.pen_rate_lower_l.configure(text=f"Rate of lowering pen : {int(SETTINGS.pen_rate_lower)} (50)")
 
     
     def apply(self, value=None):
