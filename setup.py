@@ -13,6 +13,7 @@ import setuptools
 
 install_requires=[
         'pyaml>=6',
+        'customtkinter>=5'
         # + axidraw python api
     ]
 
