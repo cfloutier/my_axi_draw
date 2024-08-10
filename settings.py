@@ -18,7 +18,7 @@ class BaseSettings:
 
         return file_path
 
-    def _load(self, name = None):
+    def load(self, name = None):
         file_path = self._file_path(name)
         if not file_path.exists():
            print("file not found")
@@ -46,7 +46,7 @@ class BaseSettings:
     def __str__(self) -> str:
         return str(self.__dict__)
 
-class InternalSettings:
+class InternalSettings(BaseSettings):
     """ 
     settings used only for this app 
     """
@@ -56,10 +56,14 @@ class InternalSettings:
         self.svg_file = None
         self.profile_name = "default"
 
+ 
     def save(self):
         self._save("internal")
 
-class OverloadedSettings:
+    def _file_path(self, name = None):
+        return super()._file_path("internal")
+
+class OverloadedSettings(BaseSettings):
     """ overload of some of the standard settings """
 
     def __init__(self) -> None:
@@ -105,6 +109,14 @@ class OverloadedSettings:
                 # Resolution is native_res_factor * sqrt(2) steps/inch in Low Resolution  (Approx 1437 steps/in)
                 #       and 2 * native_res_factor * sqrt(2) steps/inch in High Resolution (Approx 2874 steps/in)
 
+
+    def reset(self):
+
+        new_values = OverloadedSettings()
+
+        for key, value in new_values.__dict__.items(): 
+            setattr(self, key, value)
+
     def apply(self, ad: axidraw.AxiDraw):
 
         my_dict = self.__dict__
@@ -119,44 +131,19 @@ class OverloadedSettings:
         file_path = Path(__file__).parent / "settings" / (name + ".yml") 
 
         return file_path
-
-    def load(self, name = None):
-        file_path = self._file_path(name)
-        if not file_path.exists():
-           print("file not found")
-           return
-       
-        with open(file_path, 'r', encoding='UTF-8') as stream:
-            my_dict = yaml.load(stream, Loader=yaml.SafeLoader)
-            if my_dict is None:
-                print("error reading file")
-                return
-            
-            for key, value in my_dict.items(): 
-                setattr(self, key, value)
-
-    def save(self, name = None):
-        file_path = self._file_path(name)
-
-        # print(file_path)
-
-        make_parent_dir(file_path)
-
-        with open(file_path, 'w', encoding='UTF-8') as stream:
-            yaml.dump(self.__dict__, stream=stream, sort_keys=True)
-
-    def __str__(self) -> str:
-        return str(self.__dict__)
+    
+    def save(self, name):
+        self._save()
 
 # static attribute
 INTERNAL_SETTINGS = InternalSettings()
 SETTINGS = OverloadedSettings()
 
-if __name__ == "__main__":
-    # test U
+# if __name__ == "__main__":
+#     # test U
 
-    s = OverloadedSettings()
-    print(s)
-    s.save()
-    print(s)
+#     s = OverloadedSettings()
+#     print(s)
+#     s.save()
+#     print(s)
 

@@ -1,9 +1,8 @@
-from config import SETTINGS
+from settings import SETTINGS
 import customtkinter as ctk
 
 import pen_commands as pen
 from tools.ctk.base_frame import BaseFrame
-from tools.ctk.separator import CTkWindowSeparator
 
 class PenPage():
     def __init__(self, frame:ctk.CTkFrame):
@@ -18,6 +17,8 @@ class PenPage():
         self.pen_settings = PenSettings(frame)
         self.pen_settings.grid(row=1, column=1, padx=20, pady=10, sticky="new")
 
+        # self.pen_settings = SpeedPage(frame)
+        # self.pen_settings.grid(row=2, column=1, padx=20, pady=10, sticky="new")
 
 class PenButtons(ctk.CTkFrame):
 
@@ -59,7 +60,7 @@ class PenSettings(BaseFrame):
         # read conf
         self.set()
         # set text and config
-        self.apply()
+        self.applyTexts()
 
     def on_auto(self):
 
@@ -105,4 +106,4 @@ class PenSettings(BaseFrame):
 
         if changed:
             self.applyTexts()
-            SETTINGS.save()
+            SETTINGS._save()

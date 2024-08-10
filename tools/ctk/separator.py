@@ -11,7 +11,7 @@ For frame separators, use the other file in main.
 from customtkinter import *
 from typing import Any, Optional, Union, Tuple
 
-def CTkWindowSeparator(master: Any,
+def Separator(master: Any,
                       size: int = 2, #1 doesn't work becuase CustomTkinter has an inbuilt function that rounds width and height to the nearest even number
                       length: int = 75, #It is 75 percent. 75% * 200 = Length of Separator
                       multiply: int = 200,

@@ -1,6 +1,6 @@
 
 from pyaxidraw import axidraw
-from config import SETTINGS
+from settings import SETTINGS
 
 def build_plot_ad() -> axidraw.AxiDraw:
     """ build ad interface and apply settings """
