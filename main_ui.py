@@ -3,6 +3,7 @@ import customtkinter as ctk
 from pen_page import PenPage
 from speed_page import SpeedPage
 from settings_page import SettingsFrame
+from trace_page import TracePage
 
 app = None
 
@@ -16,13 +17,12 @@ class TabView(ctk.CTkTabview):
         self.speed_tab = self.add("Speed")
 
         # add widgets on tabs
-        self.label = ctk.CTkLabel(master=self.trace_tab, text="To DO")
-        self.label.grid(row=0, column=0, padx=20, pady=10, sticky="n")
+        self.trace_page = TracePage(self.trace_tab)
 
         self.pen_page = PenPage(self.pen_tab)
         self.speed_page = SpeedPage(self.speed_tab)
         
-        self.set("Settings")
+        self.set("Trace")
 
 class MainWindow(ctk.CTk):
 
@@ -48,11 +48,11 @@ class MainWindow(ctk.CTk):
         
 
         # add the setting page
-        self.settings_page = SettingsFrame(app, self)
-        self.settings_page.pack(side="top", fill="x")
+        # self.settings_page = SettingsFrame(app, self)
+        # self.settings_page.pack(side="top", fill="both")
 
         self.tab_view = TabView(master=self)
-        self.tab_view.pack(fill="x", padx=20)
+        self.tab_view.pack(fill="both", padx=5, pady=5)
 
         # self.checkbox_frame = ctk.CTkFrame(self)
         # self.checkbox_frame.grid(row=0, column=0, padx=10, pady=(10, 0), sticky="nsw")

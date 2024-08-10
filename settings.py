@@ -52,11 +52,10 @@ class InternalSettings(BaseSettings):
     """
 
     def __init__(self) -> None:
-
         self.svg_file = None
         self.profile_name = "default"
+        self.svg_path = (Path(__file__).parent / "sources_svg").resolve()
 
- 
     def save(self):
         self._save("internal")
 

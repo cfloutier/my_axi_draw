@@ -16,7 +16,8 @@
             "type": "debugpy",
             "request": "launch",
             "program": "main_ui.py",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "justMyCode": false
         }
     ]
 }

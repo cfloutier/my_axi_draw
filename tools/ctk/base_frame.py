@@ -14,7 +14,7 @@ class Switch(ctk.CTkSwitch):
 class BaseFrame(ctk.CTkFrame):
     """ a base class for frames using vertical grid"""
 
-    def __init__(self, master, label, **kwargs):
+    def __init__(self, master, label = None, **kwargs):
         super().__init__(master, **kwargs)
         pass
     
@@ -66,6 +66,8 @@ class BaseFrame(ctk.CTkFrame):
             self.col = 0
             sw.grid(row=self.row, column=self.col, padx=self.padx, pady=self.pady, sticky="w")
             self.row += 1
+
+        return sw
 
     def Combo(self, label, values, command, inline = False):
         label_ = ctk.CTkLabel(self, text=label, justify="left")

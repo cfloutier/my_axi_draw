@@ -1,7 +1,7 @@
 from settings import SETTINGS
 import customtkinter as ctk
 
-import pen_commands as pen
+from pen_commands import TRACER
 from tools.ctk.base_frame import BaseFrame
 
 class PenPage():
@@ -25,13 +25,13 @@ class PenButtons(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.toggle_bt = ctk.CTkButton(self, text="Toggle", command = pen.toggle_pen)
+        self.toggle_bt = ctk.CTkButton(self, text="Toggle", command = TRACER.toggle_pen)
         self.toggle_bt.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
 
-        self.up_bt = ctk.CTkButton(self, text="Pen Up", command= pen.pen_up)
+        self.up_bt = ctk.CTkButton(self, text="Pen Up", command= TRACER.pen_up)
         self.up_bt.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
 
-        self.up_bt = ctk.CTkButton(self, text="Pen Down", command=pen.pen_down)
+        self.up_bt = ctk.CTkButton(self, text="Pen Down", command=TRACER.pen_down)
         self.up_bt.grid(row=3, column=0, padx=10, pady=10, sticky="ew")
 
 
