@@ -1,20 +1,19 @@
-from settings import INTERNAL_SETTINGS, SETTINGS, OverloadedSettings
+from globals import my_log, refresh_ui
+
+from settings import SETTINGS, INTERNAL_SETTINGS
 from tools.ctk.base_frame import BaseFrame
 import customtkinter as ctk
 from pathlib import Path
 
 class SettingsFrame(BaseFrame):
 
-    def __init__(self, main_app, master: ctk.CTkFrame, **kwargs):
+    def __init__(self, master: ctk.CTkFrame, **kwargs):
         super().__init__(master, label=None, **kwargs, width=500)
 
         self.grid_columnconfigure(0, weight=100)
         self.first_pad_y = 2
         self._padx = 2
-        
 
-
-        self.main_app = main_app
         self.col = 1
         self.profile_combo = self.Combo(label="Profile : ", values = self.list_profiles(), command = self.on_profile_changed, inline=True)
         self.profile_combo.set(INTERNAL_SETTINGS.profile_name)
@@ -29,7 +28,7 @@ class SettingsFrame(BaseFrame):
         INTERNAL_SETTINGS._save()
         SETTINGS.load()
         # reset all pages
-        self.main_app.load_settings()
+        refresh_ui()
 
         # print(profile_name)
 
@@ -49,12 +48,13 @@ class SettingsFrame(BaseFrame):
         # new_profile_name = dialog.get_input()
         new_profile_name = self.profile_combo.get()
         if new_profile_name == INTERNAL_SETTINGS.profile_name:
-            print(f"{new_profile_name} already exists")
+            my_log(f"{new_profile_name} profile already exists")
             return
 
         INTERNAL_SETTINGS.profile_name = new_profile_name
-        INTERNAL_SETTINGS._save()
-        SETTINGS._save()
+        INTERNAL_SETTINGS.save()
+
+        SETTINGS.save()
 
         self.profile_combo.configure(values=self.list_profiles())
         self.profile_combo.set(new_profile_name)
@@ -66,7 +66,8 @@ class SettingsFrame(BaseFrame):
 
         SETTINGS.reset()
         # reset all pages
-        self.main_app.load_settings()
+        refresh_ui()
+        INTERNAL_SETTINGS.save()
         SETTINGS._save()
 
     

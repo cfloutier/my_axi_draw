@@ -2,6 +2,7 @@
 from pathlib import Path
 import time
 from typing import Union
+from globals import my_log
 from pyaxidraw import axidraw
 from settings import SETTINGS
 import threading
@@ -46,6 +47,11 @@ class TracerCommands:
         self.start_time = 0
         self.dist_pen_total = 0
         self.is_paused = False
+        self.starting = False
+       
+        # cumultation duration of all pause times
+        self.pause_duration = 0
+        self.pause_travel_in = 0 # distanbe in inch to correct an ad bug in res_plot 
 
     def toggle_pen(self):
 
@@ -86,7 +92,6 @@ class TracerCommands:
         ad.options.manual_cmd  = "lower_pen"
         ad.plot_run()   # Execute the command 
 
-
     def back_home(self):
         if not self.is_paused or not self.ad:
             self.is_paused = False
@@ -114,23 +119,27 @@ class TracerCommands:
     def draw(self, file_path: Union[Path, str]):
 
         def run_draw():
-            print(f"drawing {abs_path}")
+            my_log(f"drawing {abs_path}")
 
             self.start_time = time.time()
             self.is_paused = False
 
             if not self.is_paused and not self.ad:
                 self.ad = build_plot_ad(abs_path)
+                # starting new run
+                self.pause_duration = 0
+                self.pause_travel_in = 0
 
                 self.ad.options.preview = False
                 self.ad.options.report_time = True # Enable time and distance estimates
-                self.ad.options.report_time = True # Enable time and distance estimates
                 self.ad.errors.code = 0
-            else:
+            else:        
                 self.ad.options.mode = "res_plot"
                 self.ad.plot_status.stopped = 0
                 self.ad.errors.code = 0
+                self.pause_travel_in += self.ad.plot_status.stats.up_travel_inch          
 
+            self.starting = False
 
             # self.ad.options.progress= True
             self.report = None
@@ -138,16 +147,23 @@ class TracerCommands:
             self.ad.plot_run()   # plot the document
 
             end_time = time.time()
-            print_time = td_format(timedelta(seconds=end_time-self.start_time))
+            total_time = end_time-self.start_time
+            print_time = td_format(timedelta(seconds=total_time))
             
             is_paused = self.ad.plot_status.stopped == 103
 
             if is_paused:
+                self.is_paused = True
+                self.pause_duration += total_time
+                
+
+                print(f"cur_travel : {self.cur_travel} / {self.dist_pen_total} ")
+                print(f"pause_travel : {self.pause_travel_in} ")
+
                 result = "----------------------- PAUSED -----------------------------\n"
                 result += f"duration : {print_time}\n"
                 result += f"Press Run to restart \n"
                 result += "----------------------------------------------------------\n"
-                self.is_paused = True
             else:
                 result = "----------------------- ENDED -----------------------------\n"
                 result += f"file : {abs_path}\n"
@@ -166,18 +182,30 @@ class TracerCommands:
         if self.ad and not self.is_paused:
             self.ad = None
             return
+        
+        self.starting = True
 
         abs_path = str(file_path.resolve())
 
         t = threading.Thread(target=run_draw)
         t.start()
 
+    @property
+    def cur_travel(self):
+        if not self.ad:
+            return 0
+        
+        stats = self.ad.plot_status.stats
+
+        print(f"{stats.up_travel_inch} up + {self.pause_travel_in} saved + {stats.down_travel_inch} dn")
+        return (stats.up_travel_inch + self.pause_travel_in + stats.down_travel_inch) * 2.54 
 
     def preload(self, file_path: Union[Path, str]):
         # preload the svg in a thread
 
         def run_preload():
-            print(abs_path)
+            # my_log("preload" + str(abs_path))
+
             self.ad = build_plot_ad(abs_path)
             # ad.plot_setup(abs_path)    # Parse the input file
 
@@ -191,7 +219,7 @@ class TracerCommands:
 
             print_time = td_format(timedelta(seconds=self.ad.time_estimate))
             dist_pen_down = self.ad.distance_pendown
-            self.dist_pen_total = self.ad.distance_total
+            self.dist_pen_total = self.ad.distance_total * 100
             pen_lifts = self.ad.pen_lifts
             time_elapsed = self.ad.time_elapsed
 

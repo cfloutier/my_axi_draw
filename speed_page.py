@@ -29,9 +29,6 @@ class SpeedPage(BaseFrame):
 
         # read conf
         self.set()
-        # set text and config
-        self.applyTexts()
-
 
     def set(self):
         self.speed_pendown.set(SETTINGS.speed_pendown)
@@ -40,8 +37,9 @@ class SpeedPage(BaseFrame):
         self.accel.set(SETTINGS.accel)        
         self.pen_rate_raise.set(SETTINGS.pen_rate_raise)
         self.pen_rate_lower.set(SETTINGS.pen_rate_lower)        
-        self.const_speed.set(SETTINGS.const_speed)     
-
+        self.const_speed.set(SETTINGS.const_speed)    
+        self.applyTexts()
+ 
     def applyTexts(self):
 
         self.speed_pendown_l.configure(text=f"Maximum plotting speed : {int(SETTINGS.speed_pendown)} (25)")

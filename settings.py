@@ -5,8 +5,11 @@ from pathlib import Path
 
 import yaml
 
+from globals import my_log
 from pyaxidraw import axidraw
 from tools.fs import make_parent_dir
+
+
 
 class BaseSettings:
 
@@ -21,13 +24,13 @@ class BaseSettings:
     def load(self, name = None):
         file_path = self._file_path(name)
         if not file_path.exists():
-           print("file not found")
+           my_log("file not found")
            return
        
         with open(file_path, 'r', encoding='UTF-8') as stream:
             my_dict = yaml.load(stream, Loader=yaml.SafeLoader)
             if my_dict is None:
-                print("error reading file")
+                my_log("error reading file")
                 return
             
             for key, value in my_dict.items(): 
@@ -36,7 +39,7 @@ class BaseSettings:
     def _save(self, name = None):
         file_path = self._file_path(name)
 
-        # print(file_path)
+        my_log(f"saving configuration : {file_path.stem}")
 
         make_parent_dir(file_path)
 
@@ -54,9 +57,12 @@ class InternalSettings(BaseSettings):
     def __init__(self) -> None:
         self.svg_file = None
         self.profile_name = "default"
+
         self.svg_path = (Path(__file__).parent / "sources_svg").resolve()
+        self.auto_load_svg = None
 
     def save(self):
+
         self._save("internal")
 
     def _file_path(self, name = None):
@@ -95,7 +101,7 @@ class OverloadedSettings(BaseSettings):
         self.auto_rotate = False      # Auto-select portrait vs landscape orientation
                                     # Default: True
 
-        self.reordering = 0          # Plot optimization option (0-4; 3 is deprecated)
+        self.reordering = 2          # Plot optimization option (0-4; 3 is deprecated)
                                     # 0: Least; Only connect adjoining paths (Default)
                                     # 1: Basic; Also reorder paths for speed
                                     # 2: Full; Also allow path reversal
@@ -131,12 +137,9 @@ class OverloadedSettings(BaseSettings):
 
         return file_path
     
-    def save(self, name):
+    def save(self):
         self._save()
 
-# static attribute
-INTERNAL_SETTINGS = InternalSettings()
-SETTINGS = OverloadedSettings()
 
 # if __name__ == "__main__":
 #     # test U
@@ -146,3 +149,5 @@ SETTINGS = OverloadedSettings()
 #     s.save()
 #     print(s)
 
+INTERNAL_SETTINGS = InternalSettings()
+SETTINGS = OverloadedSettings()
