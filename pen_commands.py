@@ -10,7 +10,7 @@ from datetime import timedelta
 
 from tools.time import td_format
 
-def build_plot_ad(file_name = None) -> axidraw.AxiDraw:
+def build_plot_ad(file_name = None, preview = False) -> axidraw.AxiDraw:
     """ build ad interface and apply settings """
 
     # to disable connection in debug mode
@@ -22,8 +22,19 @@ def build_plot_ad(file_name = None) -> axidraw.AxiDraw:
     else:
         ad.plot_setup()
 
+
     SETTINGS.apply(ad)
 
+    if not preview:
+        # check connection
+        ad.serial_connect()
+        ad.query_ebb_voltage()
+
+    for key, value in ad.warnings.warning_dict.items():
+        my_log(f"connection warning : {key}:{value}")
+        if key == 'voltage':
+            return None
+        
     return ad
 
 def build_interactive_ad() -> axidraw.AxiDraw:
@@ -53,6 +64,15 @@ class TracerCommands:
         self.pause_duration = 0
         self.pause_travel_in = 0 # distanbe in inch to correct an ad bug in res_plot 
 
+    def my_plot(self, ad):
+
+        ad.plot_run()          # Execute the command
+
+        if ad.text_out:
+            my_log(ad.text_out)
+        if ad.error_out:
+            my_log("Error : " + ad.error_out)
+
     def toggle_pen(self):
 
         # trace in progress
@@ -64,7 +84,9 @@ class TracerCommands:
             return
         
         ad.options.mode = "toggle"
-        ad.plot_run()          # Execute the command
+        self.my_plot(ad)
+
+    
 
     def pen_up(self):
         # trace in progress
@@ -77,7 +99,7 @@ class TracerCommands:
         
         ad.options.mode = "manual"
         ad.options.manual_cmd  = "raise_pen"
-        ad.plot_run()          # Execute the command
+        self.my_plot(ad)
 
     def pen_down(self):
         # trace in progress
@@ -90,18 +112,8 @@ class TracerCommands:
         
         ad.options.mode = "manual"
         ad.options.manual_cmd  = "lower_pen"
-        ad.plot_run()   # Execute the command 
+        self.my_plot(ad)
 
-    def back_home(self):
-        if not self.is_paused or not self.ad:
-            self.is_paused = False
-            self.ad = None
-            return
-        
-        self.ad.options.mode = "res_home"
-        self.ad.plot_run()   # Execute the command 
-
-        self.ad = None
         
     def disable_motors(self):
         # trace in progress
@@ -114,18 +126,37 @@ class TracerCommands:
         
         ad.options.mode = "manual"
         ad.options.manual_cmd  = "disable_xy"
-        ad.plot_run()   # Execute the command 
+        self.my_plot(ad)
+
+    
+    def back_home(self):
+        if not self.is_paused or not self.ad:
+            self.is_paused = False
+            self.ad = None
+            return
+        
+        self.ad.options.mode = "res_home"
+        self.ad.plot_run()   # Execute the command 
+
+        self.my_plot(self.ad)
+
+        self.ad = None
 
     def draw(self, file_path: Union[Path, str]):
 
         def run_draw():
-            my_log(f"drawing {abs_path}")
+            my_log(f"start drawing thread {abs_path}")
 
             self.start_time = time.time()
             self.is_paused = False
+            self.report = None
 
             if not self.is_paused and not self.ad:
                 self.ad = build_plot_ad(abs_path)
+                if self.ad == None:
+                    self.starting = False
+                    return
+
                 # starting new run
                 self.pause_duration = 0
                 self.pause_travel_in = 0
@@ -141,10 +172,11 @@ class TracerCommands:
 
             self.starting = False
 
+
             # self.ad.options.progress= True
             self.report = None
-        
-            self.ad.plot_run()   # plot the document
+
+            self.my_plot(self.ad)
 
             end_time = time.time()
             total_time = end_time-self.start_time
@@ -153,10 +185,9 @@ class TracerCommands:
             is_paused = self.ad.plot_status.stopped == 103
 
             if is_paused:
-                self.is_paused = True
+                
                 self.pause_duration += total_time
                 
-
                 print(f"cur_travel : {self.cur_travel} / {self.dist_pen_total} ")
                 print(f"pause_travel : {self.pause_travel_in} ")
 
@@ -164,6 +195,7 @@ class TracerCommands:
                 result += f"duration : {print_time}\n"
                 result += f"Press Run to restart \n"
                 result += "----------------------------------------------------------\n"
+                self.is_paused = True
             else:
                 result = "----------------------- ENDED -----------------------------\n"
                 result += f"file : {abs_path}\n"
@@ -206,7 +238,11 @@ class TracerCommands:
         def run_preload():
             # my_log("preload" + str(abs_path))
 
-            self.ad = build_plot_ad(abs_path)
+            self.ad = build_plot_ad(abs_path, preview=True)
+            if self.ad == None:
+                return
+            
+
             # ad.plot_setup(abs_path)    # Parse the input file
 
             self.ad.options.preview = True
