@@ -1,6 +1,7 @@
 from settings import SETTINGS, INTERNAL_SETTINGS
 import globals
 
+import tkinter as tk
 import customtkinter as ctk
 from pen_page import PenPage
 from speed_page import SpeedPage
@@ -59,12 +60,20 @@ class MainWindow(ctk.CTk):
 
 def main():   
     # load default settings
-    
+    # from PIL import ImageTk
+
     INTERNAL_SETTINGS.load()
     SETTINGS.load()
 
     globals.main_app = MainWindow()
     globals.main_app.refresh_ui()
+
+    photo = tk.PhotoImage(file = 'icon.png')
+    globals.main_app.wm_iconphoto(False, photo)
+    globals.main_app.wm_iconbitmap()
+    
+    # globals.main_app.after(300, lambda: globals.main_app.wm_iconphoto(False, photo))
+
     globals.main_app.mainloop()
 
 if __name__ == "__main__":

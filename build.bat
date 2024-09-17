@@ -1,0 +1,1 @@
+pyinstaller --noconfirm --onedir --windowed --add-data="C:\dev\__tracer\api\my_axi_draw\venv\Lib\site-packages/customtkinter;customtkinter/" main_ui.py
