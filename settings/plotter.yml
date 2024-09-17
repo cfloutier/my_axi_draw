@@ -1,0 +1,11 @@
+clip_to_page: true
+inch_to_mm: 25.4
+model: 5
+native_res_factor: 1016.0
+switch_xy: true
+x_travel_SEA1_mm: 864
+x_travel_SEA2_mm: 594
+x_travel_V3A3_mm: 430
+y_travel_SEA1_mm: 594
+y_travel_SEA2_mm: 432
+y_travel_V3A3_mm: 297

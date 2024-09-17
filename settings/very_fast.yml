@@ -1,7 +1,6 @@
 accel: 75
 auto_rotate: false
 const_speed: false
-model: 5
 native_res_factor: 1016.0
 pen_pos_down: 78
 pen_pos_up: 77

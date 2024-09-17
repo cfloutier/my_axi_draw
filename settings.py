@@ -55,6 +55,7 @@ class InternalSettings(BaseSettings):
     """
 
     def __init__(self) -> None:
+        # the current loaded file
         self.svg_file = None
         self.profile_name = "default"
 
@@ -62,11 +63,90 @@ class InternalSettings(BaseSettings):
         self.auto_load_svg = None
 
     def save(self):
-
         self._save("internal")
 
     def _file_path(self, name = None):
         return super()._file_path("internal")
+    
+class PlotterParams(BaseSettings):
+    """ 
+    plotter size and calibration
+    """
+    def __init__(self) -> None:
+
+        # must be copied to options 
+        self.model = 5      # AxiDraw Model (1-6).
+                            # 1: AxiDraw V2 or V3 (Default). 2: AxiDraw V3/A3 or SE/A3.
+                            # 3: AxiDraw V3 XLX. 4: AxiDraw MiniKit.
+                            # 5: AxiDraw SE/A1.  6: AxiDraw SE/A2.
+
+        # part of the internal params
+        self.native_res_factor = 1016.0  # Motor resolution factor, steps per inch. Default: 1016.0
+                # Note that resolution is defined along native (not X or Y) axes.
+                # Resolution is native_res_factor * sqrt(2) steps/inch in Low Resolution  (Approx 1437 steps/in)
+                #       and 2 * native_res_factor * sqrt(2) steps/inch in High Resolution (Approx 2874 steps/in)
+
+        self.clip_to_page = True  # Clip plotting area to SVG document size. Default: True
+
+        self.inch_to_mm = 25.4
+
+        self.switch_xy = True
+
+        # Model 5 in mm !
+        self.x_travel_SEA1_mm = 864     # AxiDraw SE/A1: X             Default: 34.02 in (864 mm)
+        self.y_travel_SEA1_mm = 594     # AxiDraw SE/A1: Y             Default: 23.39 in (594 mm)
+
+        # Model 6
+        self.x_travel_SEA2_mm = 594     # AxiDraw SE/A2: X             Default: 23.39 in (594 mm)
+        self.y_travel_SEA2_mm = 432     # AxiDraw SE/A2: Y             Default: 17.01 in (432 mm)
+
+        # Model 2
+        self.x_travel_V3A3_mm = 430    # V3/A3 and SE/A3: X           Default: 16.93 in (430 mm)
+        self.y_travel_V3A3_mm = 297    # V3/A3 and SE/A3: Y           Default: 11.69 in (297 mm)
+
+    def save(self):
+        self._save("plotter")
+
+    def _file_path(self, name = None):
+        return super()._file_path("plotter")   
+
+    def apply(self, ad: axidraw.AxiDraw):
+
+        # return
+
+        ad.options.model = self.model
+
+        ad.params.native_res_factor = self.native_res_factor
+
+        if self.switch_xy:
+    
+            # convert to inches
+            ad.params.x_travel_SEA1 = self.y_travel_SEA1_mm / self.inch_to_mm
+            ad.params.y_travel_SEA1 = self.x_travel_SEA1_mm / self.inch_to_mm
+
+            ad.params.x_travel_SEA2 = self.y_travel_SEA2_mm / self.inch_to_mm
+            ad.params.y_travel_SEA2 = self.x_travel_SEA2_mm / self.inch_to_mm
+
+            ad.params.x_travel_V3A3 = self.y_travel_V3A3_mm / self.inch_to_mm
+            ad.params.y_travel_V3A3 = self.x_travel_V3A3_mm / self.inch_to_mm
+
+        else:
+            # convert to inches
+            ad.params.x_travel_SEA1 = self.x_travel_SEA1_mm / self.inch_to_mm
+            ad.params.y_travel_SEA1 = self.y_travel_SEA1_mm / self.inch_to_mm
+
+            ad.params.x_travel_SEA2 = self.x_travel_SEA2_mm / self.inch_to_mm
+            ad.params.y_travel_SEA2 = self.y_travel_SEA2_mm / self.inch_to_mm
+
+            ad.params.x_travel_V3A3 = self.x_travel_V3A3_mm / self.inch_to_mm
+            ad.params.y_travel_V3A3 = self.y_travel_V3A3_mm / self.inch_to_mm
+        
+        ad.params.clip_to_page = self.clip_to_page
+
+    def reset(self):
+        new_values = PlotterParams()
+        for key, value in new_values.__dict__.items(): 
+            setattr(self, key, value)
 
 class OverloadedSettings(BaseSettings):
     """ overload of some of the standard settings """
@@ -86,7 +166,7 @@ class OverloadedSettings(BaseSettings):
         self.const_speed = False     # Use constant velocity mode when pen is down. Default False
         self.report_time = False     # Report time elapsed. Default False
 
-        self.model = 5      # AxiDraw Model (1-6).
+        self.model = 6      # AxiDraw Model (1-6).
                             # 1: AxiDraw V2 or V3 (Default). 2: AxiDraw V3/A3 or SE/A3.
                             # 3: AxiDraw V3 XLX. 4: AxiDraw MiniKit.
                             # 5: AxiDraw SE/A1.  6: AxiDraw SE/A2.
@@ -109,12 +189,6 @@ class OverloadedSettings(BaseSettings):
 
         self.random_start = False    # Randomize start locations of closed paths. Default False
 
-        self.native_res_factor = 1016.0  # Motor resolution factor, steps per inch. Default: 1016.0
-                # Note that resolution is defined along native (not X or Y) axes.
-                # Resolution is native_res_factor * sqrt(2) steps/inch in Low Resolution  (Approx 1437 steps/in)
-                #       and 2 * native_res_factor * sqrt(2) steps/inch in High Resolution (Approx 2874 steps/in)
-
-
     def reset(self):
 
         new_values = OverloadedSettings()
@@ -124,9 +198,7 @@ class OverloadedSettings(BaseSettings):
 
     def apply(self, ad: axidraw.AxiDraw):
 
-        my_dict = self.__dict__
-
-        for key, value in my_dict.items(): 
+        for key, value in self.__dict__.items(): 
             setattr(ad.options, key, value)
 
     def _file_path(self, name = None):
@@ -150,4 +222,7 @@ class OverloadedSettings(BaseSettings):
 #     print(s)
 
 INTERNAL_SETTINGS = InternalSettings()
+PLOTTER_PARAMS = PlotterParams()
 SETTINGS = OverloadedSettings()
+
+PLOTTER_PARAMS.save()

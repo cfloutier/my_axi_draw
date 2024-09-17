@@ -23,5 +23,4 @@ def td_format(td_object: timedelta):
 
     return " ".join(strings)
 
-
-print(td_format(timedelta(seconds=1.2)))
+# print(td_format(timedelta(seconds=1.2)))

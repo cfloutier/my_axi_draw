@@ -32,6 +32,7 @@ class TracePage(ctk.CTkFrame):
         self.buttons_bar = BaseFrame(self)
 
         self.load_bt = self.buttons_bar.Button("Load svg", command=self.load_svg)
+        self.load_bt = self.buttons_bar.Button("Reload", command=self.reload_last)
 
         self.run_bt = self.buttons_bar.Button("Run", command=self.run) 
         self.pause_bt = self.buttons_bar.Button("Pause", command=self.pause) 
@@ -78,6 +79,10 @@ class TracePage(ctk.CTkFrame):
 
             self.set_status(Status.Preview)
             self.start_pooling()
+
+    def reload_last(self):
+        if INTERNAL_SETTINGS.svg_file:
+            self.load_svg( INTERNAL_SETTINGS.svg_file )
 
     def run(self):
 
@@ -188,7 +193,7 @@ class TracePage(ctk.CTkFrame):
         total_travel = TRACER.cur_travel 
         distance_total = TRACER.dist_pen_total
 
-        print(f"{total_travel} / {distance_total}")
+        # print(f"{total_travel} / {distance_total}")
 
         if distance_total != 0:
             progress = total_travel / distance_total

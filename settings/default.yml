@@ -1,10 +1,10 @@
-accel: 75
+accel: 58.1484375
 auto_rotate: false
+clip_to_page: false
 const_speed: false
-model: 5
-native_res_factor: 1016.0
-pen_pos_down: 44
-pen_pos_up: 14
+
+pen_pos_down: 60
+pen_pos_up: 0
 pen_rate_lower: 50
 pen_rate_raise: 75
 profile_name: aa
@@ -12,6 +12,5 @@ random_start: false
 reordering: 2
 report_time: false
 resolution: 1
-speed_pendown: 6.8311518324607325
-speed_penup: 75
-svg_file: null
+speed_pendown: 28.4140625
+speed_penup: 52.30468749999999

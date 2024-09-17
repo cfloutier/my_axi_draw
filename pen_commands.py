@@ -4,7 +4,7 @@ import time
 from typing import Union
 from globals import my_log
 from pyaxidraw import axidraw
-from settings import SETTINGS
+from settings import SETTINGS, PLOTTER_PARAMS
 import threading
 from datetime import timedelta
 
@@ -18,12 +18,12 @@ def build_plot_ad(file_name = None, preview = False) -> axidraw.AxiDraw:
 
     ad = axidraw.AxiDraw() # Create class instance
     if file_name:
-        ad.plot_setup(file_name)        # Run setup without input file
+        ad.plot_setup(file_name)        
     else:
-        ad.plot_setup()
-
+        ad.plot_setup() # Run setup without input file
 
     SETTINGS.apply(ad)
+    PLOTTER_PARAMS.apply(ad)
 
     if not preview:
         # check connection
@@ -43,6 +43,7 @@ def build_interactive_ad() -> axidraw.AxiDraw:
     ad.interactive()        # Run setup without input file
 
     SETTINGS.apply(ad)
+    PLOTTER_PARAMS.apply(ad)
     ad.update()
 
     return ad  
@@ -86,7 +87,6 @@ class TracerCommands:
         ad.options.mode = "toggle"
         self.my_plot(ad)
 
-    
 
     def pen_up(self):
         # trace in progress
@@ -229,7 +229,7 @@ class TracerCommands:
         
         stats = self.ad.plot_status.stats
 
-        print(f"{stats.up_travel_inch} up + {self.pause_travel_in} saved + {stats.down_travel_inch} dn")
+        # print(f"{stats.up_travel_inch} up + {self.pause_travel_in} saved + {stats.down_travel_inch} dn")
         return (stats.up_travel_inch + self.pause_travel_in + stats.down_travel_inch) * 2.54 
 
     def preload(self, file_path: Union[Path, str]):
@@ -241,8 +241,6 @@ class TracerCommands:
             self.ad = build_plot_ad(abs_path, preview=True)
             if self.ad == None:
                 return
-            
-
             # ad.plot_setup(abs_path)    # Parse the input file
 
             self.ad.options.preview = True
