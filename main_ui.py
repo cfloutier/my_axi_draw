@@ -56,9 +56,7 @@ class MainWindow(ctk.CTk):
         self.tab_view.trace_page.log(txt)
         print("log: " + txt)
 
-
-
-def main():   
+def main():
     # load default settings
     # from PIL import ImageTk
 
