@@ -7,7 +7,6 @@ from pathlib import Path
 
 
 class SettingsFrame(BaseFrame):
-
     def __init__(self, master: ctk.CTkFrame, **kwargs):
         super().__init__(master, label=None, **kwargs, width=500)
 

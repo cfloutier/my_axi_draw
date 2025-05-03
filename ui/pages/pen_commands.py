@@ -149,7 +149,6 @@ class TracerCommands:
         self.ad = None
 
     def draw(self, file_path: Union[Path, str]):
-
         def run_draw():
             my_log(f"start drawing thread {abs_path}")
 

@@ -28,7 +28,6 @@ class TabView(ctk.CTkTabview):
 
 
 class MainWindow(ctk.CTk):
-
     def __init__(self):
 
         super().__init__()
