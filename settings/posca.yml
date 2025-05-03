@@ -13,6 +13,6 @@ random_start: false
 reordering: 2
 report_time: false
 resolution: 1
-speed_pendown: 11.3984375
+speed_pendown: 15.6953125
 speed_penup: 82.8125
 svg_file: null

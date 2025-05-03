@@ -51,7 +51,7 @@ class BaseSettings:
 
 class InternalSettings(BaseSettings):
     """ 
-    settings used only for this app 
+    settings used only for this app, file names, current pen profile
     """
 
     def __init__(self) -> None:

@@ -1,10 +1,13 @@
 from settings import SETTINGS
 import customtkinter as ctk
 
-from pen_commands import TRACER
+from ui.pages.pen_commands import TRACER
 from tools.ctk.base_frame import BaseFrame
 
 class PenPage():
+    """ Page for pen options"""
+
+
     def __init__(self, frame:ctk.CTkFrame):
         
         self.frame = frame
@@ -21,6 +24,7 @@ class PenPage():
         # self.pen_settings.grid(row=2, column=1, padx=20, pady=10, sticky="new")
 
 class PenButtons(ctk.CTkFrame):
+    """ frame for the Pen buttons options """
 
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -36,6 +40,7 @@ class PenButtons(ctk.CTkFrame):
 
 
 class PenSettings(BaseFrame):
+    """ frame with the pen settings """
 
     def __init__(self, master, **kwargs):
         super().__init__(master, label="Pen Settings", **kwargs, width=500)
@@ -63,10 +68,10 @@ class PenSettings(BaseFrame):
         self.applyTexts()
 
     def on_auto(self):
+        """ on auto mode, changes are applied life """
 
         if (self.auto_move.get()):
             self.set_height()
-        # pass
 
     def set_height(self):
 
@@ -77,10 +82,12 @@ class PenSettings(BaseFrame):
             self.prev_up = SETTINGS.pen_pos_up
             TRACER.pen_up()
 
+
         if self.prev_down != SETTINGS.pen_pos_down:
             self.prev_down = SETTINGS.pen_pos_down
             TRACER.pen_down()
 
+        # relance toute les demi secondes
         self.after(500, self.set_height)
 
     def set(self):

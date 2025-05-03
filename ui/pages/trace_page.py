@@ -8,7 +8,7 @@ import time
 import tkinter
 from globals import my_log
 from settings import INTERNAL_SETTINGS
-from pen_commands import TRACER
+from ui.pages.pen_commands import TRACER
 from tools.ctk.base_frame import BaseFrame
 from tools.ctk.progress_bar import MyProgressBar
 from tools.time import td_format
@@ -93,7 +93,6 @@ class TracePage(ctk.CTkFrame):
         self.set_status(Status.Drawing)
         self.start_pooling()
 
-
     def set_status(self, status :Status):
 
         print(f"set_status {status}")
@@ -127,8 +126,7 @@ class TracePage(ctk.CTkFrame):
             self.stop_bt.configure(state="disabled")
             
             self.disable_bt.configure(state="normal")
-
-        
+  
         elif status == Status.Drawing:
 
             self.load_bt.configure(state="disabled")

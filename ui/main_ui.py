@@ -3,10 +3,10 @@ import globals
 
 import tkinter as tk
 import customtkinter as ctk
-from pen_page import PenPage
-from speed_page import SpeedPage
-from settings_frame import SettingsFrame
-from trace_page import TracePage
+from ui.pages.pen_page import PenPage
+from ui.pages.speed_page import SpeedPage
+from ui.pages.settings_page import SettingsFrame
+from ui.pages.trace_page import TracePage
 
 class TabView(ctk.CTkTabview):
     def __init__(self, master, **kwargs):

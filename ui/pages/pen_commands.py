@@ -46,13 +46,27 @@ def build_interactive_ad() -> axidraw.AxiDraw:
     PLOTTER_PARAMS.apply(ad)
     ad.update()
 
-    return ad  
+    return ad
+
+def excecute_plot(ad: axidraw.AxiDraw):
+    """ just execute the command the ad was prepared for and send errors and output to log after """
+
+    ad.plot_run()          # Execute the command
+
+    if ad.text_out:
+        my_log(ad.text_out)
+
+    if ad.error_out:
+        my_log("Error : " + ad.error_out) 
 
 class TracerCommands:
     """ main class used to send commands to the tracer """
+
     def __init__(self) -> None:
 
+        # jamais utilisé
         self.ad = None
+
         self.total_pen_lifts = None
         self.estimated_duration = None
         self.report = ""
@@ -63,16 +77,8 @@ class TracerCommands:
        
         # cumultation duration of all pause times
         self.pause_duration = 0
-        self.pause_travel_in = 0 # distanbe in inch to correct an ad bug in res_plot 
-
-    def my_plot(self, ad):
-
-        ad.plot_run()          # Execute the command
-
-        if ad.text_out:
-            my_log(ad.text_out)
-        if ad.error_out:
-            my_log("Error : " + ad.error_out)
+        # distance in inch to correct an ad bug in res_plot 
+        self.pause_travel_in = 0 
 
     def toggle_pen(self):
 
@@ -85,7 +91,7 @@ class TracerCommands:
             return
         
         ad.options.mode = "toggle"
-        self.my_plot(ad)
+        excecute_plot(ad)
 
 
     def pen_up(self):
@@ -99,7 +105,7 @@ class TracerCommands:
         
         ad.options.mode = "manual"
         ad.options.manual_cmd  = "raise_pen"
-        self.my_plot(ad)
+        excecute_plot(ad)
 
     def pen_down(self):
         # trace in progress
@@ -112,7 +118,7 @@ class TracerCommands:
         
         ad.options.mode = "manual"
         ad.options.manual_cmd  = "lower_pen"
-        self.my_plot(ad)
+        excecute_plot(ad)
 
         
     def disable_motors(self):
@@ -126,7 +132,7 @@ class TracerCommands:
         
         ad.options.mode = "manual"
         ad.options.manual_cmd  = "disable_xy"
-        self.my_plot(ad)
+        excecute_plot(ad)
 
     
     def back_home(self):
@@ -138,7 +144,7 @@ class TracerCommands:
         self.ad.options.mode = "res_home"
         self.ad.plot_run()   # Execute the command 
 
-        self.my_plot(self.ad)
+        excecute_plot(self.ad)
 
         self.ad = None
 
@@ -172,11 +178,10 @@ class TracerCommands:
 
             self.starting = False
 
-
             # self.ad.options.progress= True
             self.report = None
 
-            self.my_plot(self.ad)
+            excecute_plot(self.ad)
 
             end_time = time.time()
             total_time = end_time-self.start_time
@@ -285,7 +290,6 @@ class TracerCommands:
         t = threading.Thread(target=run_preload)
         t.start()
         # return result
-
 
 TRACER = TracerCommands()
 

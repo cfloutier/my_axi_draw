@@ -33,7 +33,7 @@ class SettingsFrame(BaseFrame):
         # print(profile_name)
 
     def list_profiles(self):
-        dir_path = Path(__file__).parent / "settings"
+        dir_path = Path(__file__).parent.parent.parent / "settings"
         files = []
         for file in dir_path.iterdir():
             # print(file.name)

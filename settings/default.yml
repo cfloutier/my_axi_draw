@@ -2,8 +2,8 @@ accel: 58.1484375
 auto_rotate: false
 clip_to_page: false
 const_speed: false
-
-pen_pos_down: 60
+model: 6
+pen_pos_down: 43
 pen_pos_up: 0
 pen_rate_lower: 50
 pen_rate_raise: 75
@@ -12,5 +12,5 @@ random_start: false
 reordering: 2
 report_time: false
 resolution: 1
-speed_pendown: 28.4140625
-speed_penup: 52.30468749999999
+speed_pendown: 41.046875
+speed_penup: 83.328125
