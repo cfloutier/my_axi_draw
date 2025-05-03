@@ -8,6 +8,7 @@ from ui.pages.speed_page import SpeedPage
 from ui.pages.settings_page import SettingsFrame
 from ui.pages.trace_page import TracePage
 
+
 class TabView(ctk.CTkTabview):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -22,8 +23,9 @@ class TabView(ctk.CTkTabview):
 
         self.pen_page = PenPage(self.pen_tab)
         self.speed_page = SpeedPage(self.speed_tab)
-        
+
         self.set("Trace")
+
 
 class MainWindow(ctk.CTk):
 
@@ -47,14 +49,14 @@ class MainWindow(ctk.CTk):
         self.tab_view.pen_page.pen_settings.set()
         self.tab_view.speed_page.set()
 
-
     def log(self, txt):
         if self.last_log == txt:
             return
-        
+
         self.last_log = txt
         self.tab_view.trace_page.log(txt)
         print("log: " + txt)
+
 
 def main():
     # load default settings
@@ -66,13 +68,14 @@ def main():
     globals.main_app = MainWindow()
     globals.main_app.refresh_ui()
 
-    photo = tk.PhotoImage(file = 'icon.png')
+    photo = tk.PhotoImage(file="icon.png")
     globals.main_app.wm_iconphoto(False, photo)
     globals.main_app.wm_iconbitmap()
-    
+
     # globals.main_app.after(300, lambda: globals.main_app.wm_iconphoto(False, photo))
 
     globals.main_app.mainloop()
+
 
 if __name__ == "__main__":
     main()

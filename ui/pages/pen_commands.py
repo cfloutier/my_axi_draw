@@ -1,4 +1,3 @@
-
 from pathlib import Path
 import time
 from typing import Union
@@ -10,17 +9,18 @@ from datetime import timedelta
 
 from tools.time import td_format
 
-def build_plot_ad(file_name = None, preview = False) -> axidraw.AxiDraw:
-    """ build ad interface and apply settings """
+
+def build_plot_ad(file_name=None, preview=False) -> axidraw.AxiDraw:
+    """build ad interface and apply settings"""
 
     # to disable connection in debug mode
     # return None
 
-    ad = axidraw.AxiDraw() # Create class instance
+    ad = axidraw.AxiDraw()  # Create class instance
     if file_name:
-        ad.plot_setup(file_name)        
+        ad.plot_setup(file_name)
     else:
-        ad.plot_setup() # Run setup without input file
+        ad.plot_setup()  # Run setup without input file
 
     SETTINGS.apply(ad)
     PLOTTER_PARAMS.apply(ad)
@@ -32,15 +32,16 @@ def build_plot_ad(file_name = None, preview = False) -> axidraw.AxiDraw:
 
     for key, value in ad.warnings.warning_dict.items():
         my_log(f"connection warning : {key}:{value}")
-        if key == 'voltage':
+        if key == "voltage":
             return None
-        
+
     return ad
 
+
 def build_interactive_ad() -> axidraw.AxiDraw:
-    """ build ad interface and apply settings """
-    ad = axidraw.AxiDraw() # Create class instance
-    ad.interactive()        # Run setup without input file
+    """build ad interface and apply settings"""
+    ad = axidraw.AxiDraw()  # Create class instance
+    ad.interactive()  # Run setup without input file
 
     SETTINGS.apply(ad)
     PLOTTER_PARAMS.apply(ad)
@@ -48,19 +49,21 @@ def build_interactive_ad() -> axidraw.AxiDraw:
 
     return ad
 
-def excecute_plot(ad: axidraw.AxiDraw):
-    """ just execute the command the ad was prepared for and send errors and output to log after """
 
-    ad.plot_run()          # Execute the command
+def excecute_plot(ad: axidraw.AxiDraw):
+    """just execute the command the ad was prepared for and send errors and output to log after"""
+
+    ad.plot_run()  # Execute the command
 
     if ad.text_out:
         my_log(ad.text_out)
 
     if ad.error_out:
-        my_log("Error : " + ad.error_out) 
+        my_log("Error : " + ad.error_out)
+
 
 class TracerCommands:
-    """ main class used to send commands to the tracer """
+    """main class used to send commands to the tracer"""
 
     def __init__(self) -> None:
 
@@ -74,37 +77,36 @@ class TracerCommands:
         self.dist_pen_total = 0
         self.is_paused = False
         self.starting = False
-       
+
         # cumultation duration of all pause times
         self.pause_duration = 0
-        # distance in inch to correct an ad bug in res_plot 
-        self.pause_travel_in = 0 
+        # distance in inch to correct an ad bug in res_plot
+        self.pause_travel_in = 0
 
     def toggle_pen(self):
 
         # trace in progress
         if self.ad:
             return
-        
+
         ad = build_plot_ad()
-        if not ad: 
+        if not ad:
             return
-        
+
         ad.options.mode = "toggle"
         excecute_plot(ad)
-
 
     def pen_up(self):
         # trace in progress
         if self.ad:
             return
-        
+
         ad = build_plot_ad()
-        if not ad: 
+        if not ad:
             return
-        
+
         ad.options.mode = "manual"
-        ad.options.manual_cmd  = "raise_pen"
+        ad.options.manual_cmd = "raise_pen"
         excecute_plot(ad)
 
     def pen_down(self):
@@ -113,36 +115,34 @@ class TracerCommands:
             return
 
         ad = build_plot_ad()
-        if not ad: 
+        if not ad:
             return
-        
+
         ad.options.mode = "manual"
-        ad.options.manual_cmd  = "lower_pen"
+        ad.options.manual_cmd = "lower_pen"
         excecute_plot(ad)
 
-        
     def disable_motors(self):
         # trace in progress
         if self.ad:
             return
 
         ad = build_plot_ad()
-        if not ad: 
+        if not ad:
             return
-        
+
         ad.options.mode = "manual"
-        ad.options.manual_cmd  = "disable_xy"
+        ad.options.manual_cmd = "disable_xy"
         excecute_plot(ad)
 
-    
     def back_home(self):
         if not self.is_paused or not self.ad:
             self.is_paused = False
             self.ad = None
             return
-        
+
         self.ad.options.mode = "res_home"
-        self.ad.plot_run()   # Execute the command 
+        self.ad.plot_run()  # Execute the command
 
         excecute_plot(self.ad)
 
@@ -168,13 +168,13 @@ class TracerCommands:
                 self.pause_travel_in = 0
 
                 self.ad.options.preview = False
-                self.ad.options.report_time = True # Enable time and distance estimates
+                self.ad.options.report_time = True  # Enable time and distance estimates
                 self.ad.errors.code = 0
-            else:        
+            else:
                 self.ad.options.mode = "res_plot"
                 self.ad.plot_status.stopped = 0
                 self.ad.errors.code = 0
-                self.pause_travel_in += self.ad.plot_status.stats.up_travel_inch          
+                self.pause_travel_in += self.ad.plot_status.stats.up_travel_inch
 
             self.starting = False
 
@@ -184,19 +184,21 @@ class TracerCommands:
             excecute_plot(self.ad)
 
             end_time = time.time()
-            total_time = end_time-self.start_time
+            total_time = end_time - self.start_time
             print_time = td_format(timedelta(seconds=total_time))
-            
+
             is_paused = self.ad.plot_status.stopped == 103
 
             if is_paused:
-                
+
                 self.pause_duration += total_time
-                
+
                 print(f"cur_travel : {self.cur_travel} / {self.dist_pen_total} ")
                 print(f"pause_travel : {self.pause_travel_in} ")
 
-                result = "----------------------- PAUSED -----------------------------\n"
+                result = (
+                    "----------------------- PAUSED -----------------------------\n"
+                )
                 result += f"duration : {print_time}\n"
                 result += f"Press Run to restart \n"
                 result += "----------------------------------------------------------\n"
@@ -210,7 +212,7 @@ class TracerCommands:
                 self.ad = None
 
             self.report = result
-            
+
             self.start_time = 0
 
         if not isinstance(file_path, Path):
@@ -219,7 +221,7 @@ class TracerCommands:
         if self.ad and not self.is_paused:
             self.ad = None
             return
-        
+
         self.starting = True
 
         abs_path = str(file_path.resolve())
@@ -231,11 +233,13 @@ class TracerCommands:
     def cur_travel(self):
         if not self.ad:
             return 0
-        
+
         stats = self.ad.plot_status.stats
 
         # print(f"{stats.up_travel_inch} up + {self.pause_travel_in} saved + {stats.down_travel_inch} dn")
-        return (stats.up_travel_inch + self.pause_travel_in + stats.down_travel_inch) * 2.54 
+        return (
+            stats.up_travel_inch + self.pause_travel_in + stats.down_travel_inch
+        ) * 2.54
 
     def preload(self, file_path: Union[Path, str]):
         # preload the svg in a thread
@@ -249,12 +253,12 @@ class TracerCommands:
             # ad.plot_setup(abs_path)    # Parse the input file
 
             self.ad.options.preview = True
-            self.ad.options.report_time = False # Enable time and distance estimates
-            self.ad.options.progress= True
-            
+            self.ad.options.report_time = False  # Enable time and distance estimates
+            self.ad.options.progress = True
+
             self.report = None
 
-            self.ad.plot_run()   # plot the document
+            self.ad.plot_run()  # plot the document
 
             print_time = td_format(timedelta(seconds=self.ad.time_estimate))
             dist_pen_down = self.ad.distance_pendown
@@ -291,9 +295,5 @@ class TracerCommands:
         t.start()
         # return result
 
+
 TRACER = TracerCommands()
-
-
-
-
-

@@ -5,6 +5,7 @@ from tools.ctk.base_frame import BaseFrame
 import customtkinter as ctk
 from pathlib import Path
 
+
 class SettingsFrame(BaseFrame):
 
     def __init__(self, master: ctk.CTkFrame, **kwargs):
@@ -15,14 +16,19 @@ class SettingsFrame(BaseFrame):
         self._padx = 2
 
         self.col = 1
-        self.profile_combo = self.Combo(label="Profile : ", values = self.list_profiles(), command = self.on_profile_changed, inline=True)
+        self.profile_combo = self.Combo(
+            label="Profile : ",
+            values=self.list_profiles(),
+            command=self.on_profile_changed,
+            inline=True,
+        )
         self.profile_combo.set(INTERNAL_SETTINGS.profile_name)
-     
+
         # self.Button("Change Profile", self.load, inline=True)
         self.Button("Save New", self.save, inline=True, width=50)
         self.Button("Reset", self.reset, inline=True, width=50)
 
-    def on_profile_changed(self, profile_name):      
+    def on_profile_changed(self, profile_name):
 
         INTERNAL_SETTINGS.profile_name = profile_name
         INTERNAL_SETTINGS._save()
@@ -69,8 +75,3 @@ class SettingsFrame(BaseFrame):
         refresh_ui()
         INTERNAL_SETTINGS.save()
         SETTINGS._save()
-
-    
-
-
-        

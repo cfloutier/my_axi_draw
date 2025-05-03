@@ -1,6 +1,7 @@
 import tkinter
 import customtkinter as ctk
-from tools.ctk.separator import Separator 
+from tools.ctk.separator import Separator
+
 
 class Switch(ctk.CTkSwitch):
 
@@ -10,14 +11,15 @@ class Switch(ctk.CTkSwitch):
             self.select()
         else:
             self.deselect()
-        
-class BaseFrame(ctk.CTkFrame):
-    """ a base class for frames using vertical grid"""
 
-    def __init__(self, master, label = None, **kwargs):
+
+class BaseFrame(ctk.CTkFrame):
+    """a base class for frames using vertical grid"""
+
+    def __init__(self, master, label=None, **kwargs):
         super().__init__(master, **kwargs)
         pass
-    
+
         self.row = 0
         self.col = 0
 
@@ -28,7 +30,7 @@ class BaseFrame(ctk.CTkFrame):
             self.first_pad_y = (15, self._pady)
             label_frame = ctk.CTkLabel(self, text=label)
             self.configure(border_width=1, border_color="white")
-            label_frame.place(x = 5, y = -7, anchor="nw")
+            label_frame.place(x=5, y=-7, anchor="nw")
         else:
             self.first_pad_y = self._pady
 
@@ -41,40 +43,56 @@ class BaseFrame(ctk.CTkFrame):
 
     @property
     def padx(self):
-        return self._padx 
+        return self._padx
 
     @property
     def pady(self):
         if self.row == 0:
             return self.first_pad_y
-        
+
         return self._pady
 
     def switch(self, text, command):
         sw = Switch(self, text=text, command=command)
         sw.grid(row=self.row, column=0, padx=self.padx, pady=self.pady, sticky="w")
         self.next_line()
-        
+
         return sw
-    
-    def Button(self, text, command, inline = False, width=150):   
+
+    def Button(self, text, command, inline=False, width=150):
         sw = ctk.CTkButton(self, text=text, command=command, width=width)
         if inline:
-            sw.grid(row=self.row, column=self.col, padx=self.padx, pady=self.pady, sticky="w")
+            sw.grid(
+                row=self.row,
+                column=self.col,
+                padx=self.padx,
+                pady=self.pady,
+                sticky="w",
+            )
             self.col += 1
         else:
             self.col = 0
-            sw.grid(row=self.row, column=self.col, padx=self.padx, pady=self.pady, sticky="w")
+            sw.grid(
+                row=self.row,
+                column=self.col,
+                padx=self.padx,
+                pady=self.pady,
+                sticky="w",
+            )
             self.row += 1
 
         return sw
 
-    def Combo(self, label, values, command, inline = False):
+    def Combo(self, label, values, command, inline=False):
         label_ = ctk.CTkLabel(self, text=label, justify="left")
-        label_.grid(row=self.row, column=self.col, padx=self.padx, pady=self.pady, sticky="w")
+        label_.grid(
+            row=self.row, column=self.col, padx=self.padx, pady=self.pady, sticky="w"
+        )
         self.col += 1
         combo = ctk.CTkComboBox(self, values=values, command=command)
-        combo.grid(row=self.row, column=self.col, padx=self.padx, pady=self.pady, sticky="w")
+        combo.grid(
+            row=self.row, column=self.col, padx=self.padx, pady=self.pady, sticky="w"
+        )
         if not inline:
             self.next_line()
         else:
@@ -82,19 +100,24 @@ class BaseFrame(ctk.CTkFrame):
 
         return combo
 
-    
     def label(self, text):
 
         sw = ctk.CTkLabel(self, text=text, justify="left")
-        sw.grid(row=self.row, column=0, columnspan=2,  padx=self.padx, pady=self.pady, sticky="w")
+        sw.grid(
+            row=self.row,
+            column=0,
+            columnspan=2,
+            padx=self.padx,
+            pady=self.pady,
+            sticky="w",
+        )
         self.next_line()
-        
 
         return sw
-    
-    def slider(self, from_, to, variable = None, command = None):
 
-        slider_ = ctk.CTkSlider(self, from_= from_, to=to)
+    def slider(self, from_, to, variable=None, command=None):
+
+        slider_ = ctk.CTkSlider(self, from_=from_, to=to)
 
         if variable:
             slider_.configure(variable=variable)
@@ -102,16 +125,17 @@ class BaseFrame(ctk.CTkFrame):
         if command:
             slider_.configure(command=command)
 
-        slider_.grid(row=self.row, column=0, columnspan=2, padx=self.padx, pady=5, sticky="ew")
+        slider_.grid(
+            row=self.row, column=0, columnspan=2, padx=self.padx, pady=5, sticky="ew"
+        )
         self.next_line()
-        
 
         return slider_
-    
+
     def separator(self):
 
-        sep = Separator(self, length = 200)
+        sep = Separator(self, length=200)
         sep.grid(row=self.row, column=0, columnspan=2, padx=30, pady=10, sticky="ew")
         self.next_line()
-        
+
         return sep

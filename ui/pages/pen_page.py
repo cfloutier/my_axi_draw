@@ -4,12 +4,12 @@ import customtkinter as ctk
 from ui.pages.pen_commands import TRACER
 from tools.ctk.base_frame import BaseFrame
 
-class PenPage():
-    """ Page for pen options"""
 
+class PenPage:
+    """Page for pen options"""
 
-    def __init__(self, frame:ctk.CTkFrame):
-        
+    def __init__(self, frame: ctk.CTkFrame):
+
         self.frame = frame
         frame.grid_columnconfigure(1, weight=5)
         frame.grid_rowconfigure(1, weight=2)
@@ -23,16 +23,17 @@ class PenPage():
         # self.pen_settings = SpeedPage(frame)
         # self.pen_settings.grid(row=2, column=1, padx=20, pady=10, sticky="new")
 
+
 class PenButtons(ctk.CTkFrame):
-    """ frame for the Pen buttons options """
+    """frame for the Pen buttons options"""
 
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.toggle_bt = ctk.CTkButton(self, text="Toggle", command = TRACER.toggle_pen)
+        self.toggle_bt = ctk.CTkButton(self, text="Toggle", command=TRACER.toggle_pen)
         self.toggle_bt.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
 
-        self.up_bt = ctk.CTkButton(self, text="Pen Up", command= TRACER.pen_up)
+        self.up_bt = ctk.CTkButton(self, text="Pen Up", command=TRACER.pen_up)
         self.up_bt.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
 
         self.up_bt = ctk.CTkButton(self, text="Pen Down", command=TRACER.pen_down)
@@ -40,7 +41,7 @@ class PenButtons(ctk.CTkFrame):
 
 
 class PenSettings(BaseFrame):
-    """ frame with the pen settings """
+    """frame with the pen settings"""
 
     def __init__(self, master, **kwargs):
         super().__init__(master, label="Pen Settings", **kwargs, width=500)
@@ -52,11 +53,15 @@ class PenSettings(BaseFrame):
         self.auto_move = self.switch(text="Auto Apply", command=self.on_auto)
         self.pen_up_label = self.label(text="pen up : ")
 
-        self.pen_up = self.slider(from_= 0, to=100, variable=self.pen_up_value, command=self.apply)
+        self.pen_up = self.slider(
+            from_=0, to=100, variable=self.pen_up_value, command=self.apply
+        )
         self.pen_down_label = self.label(text="pen down : ")
 
-        self.pen_down = self.slider(from_= 0, to=100, variable=self.pen_down_value, command=self.apply)
-      
+        self.pen_down = self.slider(
+            from_=0, to=100, variable=self.pen_down_value, command=self.apply
+        )
+
         self.separator()
 
         self.prev_up = SETTINGS.pen_pos_up
@@ -68,20 +73,19 @@ class PenSettings(BaseFrame):
         self.applyTexts()
 
     def on_auto(self):
-        """ on auto mode, changes are applied life """
+        """on auto mode, changes are applied life"""
 
-        if (self.auto_move.get()):
+        if self.auto_move.get():
             self.set_height()
 
     def set_height(self):
 
         if not self.auto_move.get():
             return
-        
+
         if self.prev_up != SETTINGS.pen_pos_up:
             self.prev_up = SETTINGS.pen_pos_up
             TRACER.pen_up()
-
 
         if self.prev_down != SETTINGS.pen_pos_down:
             self.prev_down = SETTINGS.pen_pos_down
@@ -98,7 +102,7 @@ class PenSettings(BaseFrame):
 
         self.pen_up_label.configure(text=f"pen up : {SETTINGS.pen_pos_up}")
         self.pen_down_label.configure(text=f"pen down : {SETTINGS.pen_pos_down}")
-        
+
     def apply(self, value=None):
 
         changed = False
