@@ -5,9 +5,9 @@ import time
 import tkinter
 from globals import my_log
 from settings import INTERNAL_SETTINGS
-from ui.pages.pen_commands import TRACER
+from pen_commands import TRACER
 from tools.ctk.base_frame import BaseFrame
-from tools.ctk.progress_bar import MyProgressBar
+from tools.ctk.progress_bar import ProgressBar
 from tools.time import td_format
 
 
@@ -28,7 +28,7 @@ class TracePage(ctk.CTkFrame):
         self._status = Status.Iddle
         # self.configure(bg_color="red")
 
-        self.buttons_bar = BaseFrame(self)
+        self.buttons_bar = BaseFrame(self, "bouuutons")
 
         self.load_bt = self.buttons_bar.Button("Load svg", command=self.load_svg)
         self.load_bt = self.buttons_bar.Button("Reload", command=self.reload_last)
@@ -50,7 +50,7 @@ class TracePage(ctk.CTkFrame):
 
         # self.report.pack(side="left", fill="both", expand=True, anchor="nsew")
 
-        self.progress = MyProgressBar(self, height=20)
+        self.progress = ProgressBar(self, height=20)
         # self.progress.pack(expand=True, side = "bottom", pady=5)
         self.progress.grid(row=1, column=1, sticky="new", pady=5)
         self.progress.set_with_text(0, "")
@@ -69,7 +69,6 @@ class TracePage(ctk.CTkFrame):
             self.load_svg(INTERNAL_SETTINGS.auto_load_svg)
 
     def load_svg(self, filename=None):
-
         if not filename:
             filename = ctk.filedialog.askopenfilename(
                 initialdir=INTERNAL_SETTINGS.svg_path,

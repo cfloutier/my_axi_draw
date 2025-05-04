@@ -3,8 +3,8 @@
 * [x] : fix UI misplacing
 * [x] : fix progress bar text
 
-* [ ] : calibrate page : drawing adding A4 A3 and A2 and adjusting precision slider
-* [ ] : manual move 
+* [ ] : calibrate page : drawing adding A4 A3 and A2 and adjusting with a precision slider
+* [ ] : manual move ??
+* [ ] : auto pause (for recharging pen)
 * [ ] : keyboard actions inputs : use the bind key : https://tkinterexamples.com/events/keyboard/
-* [ ] : resuming with options changes - test
-
+* [x] : resuming with options changes - pen height

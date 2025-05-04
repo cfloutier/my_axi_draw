@@ -15,7 +15,7 @@ class SettingsFrame(BaseFrame):
         self._padx = 2
 
         self.col = 1
-        self.profile_combo = self.Combo(
+        self.profile_combo = self.combo(
             label="Profile : ",
             values=self.list_profiles(),
             command=self.on_profile_changed,
@@ -38,7 +38,7 @@ class SettingsFrame(BaseFrame):
         # print(profile_name)
 
     def list_profiles(self):
-        dir_path = Path(__file__).parent.parent.parent / "settings"
+        dir_path = Path(__file__).parent.parent / "settings"
         files = []
         for file in dir_path.iterdir():
             # print(file.name)

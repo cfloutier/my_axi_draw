@@ -1,7 +1,7 @@
 import customtkinter as ctk
 
 
-class MyProgressBar(ctk.CTkProgressBar):
+class ProgressBar(ctk.CTkProgressBar):
     def __init__(self, master, font_size=12, text_color="white", *args, **kwargs):
         super().__init__(master=master, *args, **kwargs)
 

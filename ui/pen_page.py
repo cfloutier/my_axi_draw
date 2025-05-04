@@ -1,7 +1,7 @@
 from settings import SETTINGS
 import customtkinter as ctk
 
-from ui.pages.pen_commands import TRACER
+from pen_commands import TRACER
 from tools.ctk.base_frame import BaseFrame
 
 
@@ -19,9 +19,6 @@ class PenPage:
 
         self.pen_settings = PenSettings(frame)
         self.pen_settings.grid(row=1, column=1, padx=20, pady=10, sticky="new")
-
-        # self.pen_settings = SpeedPage(frame)
-        # self.pen_settings.grid(row=2, column=1, padx=20, pady=10, sticky="new")
 
 
 class PenButtons(ctk.CTkFrame):
@@ -48,7 +45,6 @@ class PenSettings(BaseFrame):
 
         self.pen_up_value = ctk.IntVar()
         self.pen_down_value = ctk.IntVar()
-        # self.set_
 
         self.auto_move = self.switch(text="Auto Apply", command=self.on_auto)
         self.pen_up_label = self.label(text="pen up : ")

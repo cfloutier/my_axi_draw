@@ -1,12 +1,14 @@
-from settings import SETTINGS, INTERNAL_SETTINGS
+import coloredlogs
+from settings import PLOTTER_PARAMS, SETTINGS, INTERNAL_SETTINGS, SHORTCUTS
 import globals
 
 import tkinter as tk
 import customtkinter as ctk
-from ui.pages.pen_page import PenPage
-from ui.pages.speed_page import SpeedPage
-from ui.pages.settings_page import SettingsFrame
-from ui.pages.trace_page import TracePage
+from ui.pen_page import PenPage
+from ui.speed_page import SpeedPage
+from ui.settings_page import SettingsFrame
+from ui.calibration_page import CalibrationPage
+from ui.trace_page import TracePage
 
 
 class TabView(ctk.CTkTabview):
@@ -17,14 +19,17 @@ class TabView(ctk.CTkTabview):
         self.trace_tab = self.add("Trace")
         self.pen_tab = self.add("Pen")
         self.speed_tab = self.add("Speed")
+        self.calibration_tab = self.add("Calibration")
 
         # add widgets on tabs
         self.trace_page = TracePage(self.trace_tab)
-
         self.pen_page = PenPage(self.pen_tab)
         self.speed_page = SpeedPage(self.speed_tab)
+        self.calibration_page = CalibrationPage(self.calibration_tab)
 
-        self.set("Trace")
+        SHORTCUTS.trace = self.trace_page
+
+        self.set("Calibration")
 
 
 class MainWindow(ctk.CTk):
@@ -61,6 +66,9 @@ def main():
     # load default settings
     # from PIL import ImageTk
 
+    coloredlogs.install(level="DEBUG")
+
+    PLOTTER_PARAMS.load()
     INTERNAL_SETTINGS.load()
     SETTINGS.load()
 

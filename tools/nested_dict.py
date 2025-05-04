@@ -6,6 +6,15 @@ from yaml.loader import SafeLoader
 _logger = logging.getLogger(__name__)
 
 
+def find_value(dict, value):
+    """reverse find a value and return its key, if found"""
+    try:
+        index_combo = list(dict.values()).index(value)
+    except:
+        return None
+    return list(dict.keys())[index_combo]
+
+
 def contains_key(path_arr, current_dict):
     """
     checks if the nested dict contains the key (use dots as separator)

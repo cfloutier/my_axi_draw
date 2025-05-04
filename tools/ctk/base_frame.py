@@ -1,10 +1,9 @@
-import tkinter
 import customtkinter as ctk
+from tools.ctk.edit_boxes import Int_Edit
 from tools.ctk.separator import Separator
 
 
 class Switch(ctk.CTkSwitch):
-
     def set(self, value: bool):
 
         if value:
@@ -83,7 +82,7 @@ class BaseFrame(ctk.CTkFrame):
 
         return sw
 
-    def Combo(self, label, values, command, inline=False):
+    def combo(self, label, values, command, inline=False) -> ctk.CTkComboBox:
         label_ = ctk.CTkLabel(self, text=label, justify="left")
         label_.grid(
             row=self.row, column=self.col, padx=self.padx, pady=self.pady, sticky="w"
@@ -100,7 +99,26 @@ class BaseFrame(ctk.CTkFrame):
 
         return combo
 
-    def label(self, text):
+    def number_edit(
+        self, label: str, value: int | float, int_mode: bool = True, on_change=None
+    ) -> Int_Edit:
+
+        label_ = ctk.CTkLabel(self, text=label, justify="left")
+        label_.grid(
+            row=self.row, column=self.col, padx=self.padx, pady=self.pady, sticky="w"
+        )
+        self.col += 1
+
+        int_edit = Int_Edit(self, value, int_mode, on_change)
+        int_edit.edit_box.grid(
+            row=self.row, column=self.col, padx=self.padx, pady=self.pady, sticky="w"
+        )
+
+        self.next_line()
+
+        return int_edit
+
+    def label(self, text) -> ctk.CTkLabel:
 
         sw = ctk.CTkLabel(self, text=text, justify="left")
         sw.grid(
@@ -139,3 +157,5 @@ class BaseFrame(ctk.CTkFrame):
         self.next_line()
 
         return sep
+
+    # def int_input(self, label):

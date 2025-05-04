@@ -8,7 +8,6 @@ from tools.fs import make_parent_dir
 
 
 class BaseSettings:
-
     def _file_path(self, name=None):
         if not name:
             name = "default"
@@ -83,6 +82,7 @@ class PlotterParams(BaseSettings):
         self.native_res_factor = (
             1016.0  # Motor resolution factor, steps per inch. Default: 1016.0
         )
+
         # Note that resolution is defined along native (not X or Y) axes.
         # Resolution is native_res_factor * sqrt(2) steps/inch in Low Resolution  (Approx 1437 steps/in)
         #       and 2 * native_res_factor * sqrt(2) steps/inch in High Resolution (Approx 2874 steps/in)
@@ -130,7 +130,6 @@ class PlotterParams(BaseSettings):
         # return
 
         ad.options.model = self.model
-
         ad.params.native_res_factor = self.native_res_factor
 
         if self.switch_xy:
@@ -249,4 +248,12 @@ INTERNAL_SETTINGS = InternalSettings()
 PLOTTER_PARAMS = PlotterParams()
 SETTINGS = OverloadedSettings()
 
-PLOTTER_PARAMS.save()
+
+class Shortcuts:
+    def __init__(self):
+        self.trace: "TracePage" = None
+
+
+SHORTCUTS = Shortcuts()
+
+# PLOTTER_PARAMS.save()

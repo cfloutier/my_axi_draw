@@ -5,10 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Toggle",
+            "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",
-            "program": "toggle.py",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python Debugger: TEST svg",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "svg_templates/svg_editor.py",
             "console": "integratedTerminal"
         },
         {
