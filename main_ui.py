@@ -29,7 +29,7 @@ class TabView(ctk.CTkTabview):
 
         SHORTCUTS.trace = self.trace_page
 
-        self.set("Calibration")
+        self.set("Trace")
 
 
 class MainWindow(ctk.CTk):

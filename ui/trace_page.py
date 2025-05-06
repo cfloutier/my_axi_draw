@@ -17,17 +17,28 @@ class TracePage(ctk.CTkFrame):
 
         self.buttons_bar = BaseFrame(self)
 
-        self.load_bt = self.buttons_bar.Button("Load svg", command=self.load_svg)
-        self.load_bt = self.buttons_bar.Button("Reload", command=self.reload_last)
+        self.load_bt = self.buttons_bar.button("Load svg", command=self.load_svg)
+        self.load_bt = self.buttons_bar.button("Reload", command=self.reload_last)
 
-        self.run_bt = self.buttons_bar.Button("Run", command=self.run)
-        self.pause_bt = self.buttons_bar.Button("Pause", command=PLOTTER.pause)
-        self.stop_bt = self.buttons_bar.Button("Stop", command=PLOTTER.stop)
-        self.disable_bt = self.buttons_bar.Button(
+        self.run_bt = self.buttons_bar.button("Run", command=self.run)
+        self.pause_bt = self.buttons_bar.button("Pause", command=PLOTTER.pause)
+        self.stop_bt = self.buttons_bar.button("Stop", command=PLOTTER.stop)
+        self.disable_bt = self.buttons_bar.button(
             "Disable XY", command=self.disable_motors
         )
 
         self.status_label = self.buttons_bar.label("iddle")
+
+        self.disable_bt = self.buttons_bar.button(
+            "Disable XY", command=self.disable_motors
+        )
+
+        self.auto_pause = self.buttons_bar.switch("Auto Pause", None)
+        self.auto_pause.set(False)
+        self.auto_pause_duration = self.buttons_bar.number_edit(
+            "Duration (min) : ", 10, False, inline=False
+        )
+        self.auto_pause_time = None
 
         self.buttons_bar.grid(
             row=0, column=0, rowspan=2, sticky="ne", pady=5, padx=(5, 10)
@@ -111,6 +122,7 @@ class TracePage(ctk.CTkFrame):
             self.stop_bt.configure(state="disabled")
 
             self.disable_bt.configure(state="normal")
+            self.progress.set_with_text(100, "")
 
         elif status == Status.Drawing:
 
@@ -121,6 +133,10 @@ class TracePage(ctk.CTkFrame):
             self.stop_bt.configure(state="normal")
             self.disable_bt.configure(state="disabled")
 
+            if self.auto_pause.get():
+                # auto pause is on
+                self.start_pause_timer()
+
         elif status == Status.Paused:
             self.load_bt.configure(state="normal")
 
@@ -130,6 +146,14 @@ class TracePage(ctk.CTkFrame):
             self.stop_bt.configure(state="normal")
 
             self.disable_bt.configure(state="normal")
+            self.stop_pause_timer()
+
+    def start_pause_timer(self):
+        duration_seconds = self.auto_pause_duration.get() * 60
+        self.auto_pause_time = time.time() + duration_seconds
+
+    def stop_pause_timer(self):
+        self.auto_pause_time = None
 
     def disable_motors(self):
 
@@ -163,19 +187,23 @@ class TracePage(ctk.CTkFrame):
 
                 remaining = td_format(timedelta(seconds=remaining))
 
-            # self.progress.set(progress/100)
+            content = ""
 
             if not remaining:
                 remaining = total_time_s - elapsed - PLOTTER.pause_duration
                 remaining = td_format(timedelta(seconds=remaining))
-
-                self.progress.set_with_text(
-                    progress, f"{progress*100:2.1f}% - ending... total {total_str}"
-                )
+                content = f"{progress*100:2.1f}% - ending... total {total_str}"
             else:
-                self.progress.set_with_text(
-                    progress, f"{progress*100:2.1f}% - {remaining} / {total_str}"
+                content = f"{progress*100:2.1f}% - {remaining} / {total_str}"
+
+            remaining_time_pause = None
+            if self.auto_pause_time is not None:
+                remaining_time_pause = self.auto_pause_time - time.time()
+                content += "- pause in " + td_format(
+                    timedelta(seconds=remaining_time_pause)
                 )
+
+            self.progress.set_with_text(progress, content)
 
     def update_status(self):
 
@@ -183,8 +211,17 @@ class TracePage(ctk.CTkFrame):
             self.report.insert(tkinter.END, PLOTTER.report)
             PLOTTER.report = None
 
+        self.check_pause_timer()
         self.compute_progress(PLOTTER.ad)
+
         self.after(250, self.update_status)
+
+    def check_pause_timer(self):
+
+        if self.auto_pause_time is not None:
+            remaining_time_pause = self.auto_pause_time - time.time()
+            if remaining_time_pause < 0:
+                PLOTTER.pause()
 
     def log(self, txt):
         self.report.insert(tkinter.END, txt + "\n")

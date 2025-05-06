@@ -24,8 +24,8 @@ class SettingsFrame(BaseFrame):
         self.profile_combo.set(INTERNAL_SETTINGS.profile_name)
 
         # self.Button("Change Profile", self.load, inline=True)
-        self.Button("Save New", self.save, inline=True, width=50)
-        self.Button("Reset", self.reset, inline=True, width=50)
+        self.button("Save New", self.save, inline=True, width=50)
+        self.button("Reset", self.reset, inline=True, width=50)
 
     def on_profile_changed(self, profile_name):
 

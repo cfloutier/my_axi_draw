@@ -80,7 +80,7 @@ class CalibrationPage(ctk.CTkFrame):
             from_=0, to=200, variable=self.corner_size, command=self.applyTexts
         )
 
-        self.test_page.Button("Trace Page", self.trace_page)
+        self.test_page.button("Trace Page", self.trace_page)
 
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=10)

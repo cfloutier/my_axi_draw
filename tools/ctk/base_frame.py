@@ -58,7 +58,7 @@ class BaseFrame(ctk.CTkFrame):
 
         return sw
 
-    def Button(self, text, command, inline=False, width=150):
+    def button(self, text, command, inline=False, width=150):
         sw = ctk.CTkButton(self, text=text, command=command, width=width)
         if inline:
             sw.grid(
@@ -100,14 +100,22 @@ class BaseFrame(ctk.CTkFrame):
         return combo
 
     def number_edit(
-        self, label: str, value: int | float, int_mode: bool = True, on_change=None
+        self,
+        label: str,
+        value: int | float,
+        int_mode: bool = True,
+        on_change=None,
+        inline=True,
     ) -> Int_Edit:
 
         label_ = ctk.CTkLabel(self, text=label, justify="left")
         label_.grid(
             row=self.row, column=self.col, padx=self.padx, pady=self.pady, sticky="w"
         )
-        self.col += 1
+        if inline:
+            self.col += 1
+        else:
+            self.next_line()
 
         int_edit = Int_Edit(self, value, int_mode, on_change)
         int_edit.edit_box.grid(
