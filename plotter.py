@@ -1,3 +1,4 @@
+from enum import Enum
 from pathlib import Path
 import time
 from typing import Union
@@ -50,7 +51,7 @@ def build_interactive_ad() -> axidraw.AxiDraw:
     return ad
 
 
-def excecute_plot(ad: axidraw.AxiDraw):
+def execute_plot(ad: axidraw.AxiDraw):
     """just execute the command the ad was prepared for and send errors and output to log after"""
 
     ad.plot_run()  # Execute the command
@@ -62,7 +63,19 @@ def excecute_plot(ad: axidraw.AxiDraw):
         my_log("Error : " + ad.error_out)
 
 
-class TracerCommands:
+class Status(Enum):
+
+    Iddle = 0
+    Preview = 1
+    Ready = 2
+    Drawing = 3
+    Pausing = 4
+    Paused = 5
+    Homing = 6
+    Stopping = 7
+
+
+class Plotter:
     """main class used to send commands to the tracer"""
 
     def __init__(self) -> None:
@@ -70,18 +83,28 @@ class TracerCommands:
         # jamais utilisé
         self.ad = None
 
+        self._status = Status.Iddle
+
         self.total_pen_lifts = None
         self.estimated_duration = None
         self.report = ""
         self.start_time = 0
         self.dist_pen_total = 0
-        self.is_paused = False
-        self.starting = False
 
         # cumultation duration of all pause times
         self.pause_duration = 0
         # distance in inch to correct an ad bug in res_plot
         self.pause_travel_in = 0
+        self.status_listenners = []
+
+    def set_status(self, status: Status):
+        if status == self._status:
+            return
+
+        self._status = status
+
+        for listenner in self.status_listenners:
+            listenner(self._status)
 
     def toggle_pen(self):
 
@@ -94,7 +117,7 @@ class TracerCommands:
             return
 
         ad.options.mode = "toggle"
-        excecute_plot(ad)
+        execute_plot(ad)
 
     def pen_up(self):
         # trace in progress
@@ -107,7 +130,7 @@ class TracerCommands:
 
         ad.options.mode = "manual"
         ad.options.manual_cmd = "raise_pen"
-        excecute_plot(ad)
+        execute_plot(ad)
 
     def pen_down(self):
         # trace in progress
@@ -120,7 +143,7 @@ class TracerCommands:
 
         ad.options.mode = "manual"
         ad.options.manual_cmd = "lower_pen"
-        excecute_plot(ad)
+        execute_plot(ad)
 
     def disable_motors(self):
         # trace in progress
@@ -133,33 +156,56 @@ class TracerCommands:
 
         ad.options.mode = "manual"
         ad.options.manual_cmd = "disable_xy"
-        excecute_plot(ad)
+        execute_plot(ad)
 
     def back_home(self):
-        if not self.is_paused or not self.ad:
-            self.is_paused = False
-            self.ad = None
+        if not self.ad:
             return
+
+        self.set_status(Status.Homing)
 
         self.ad.options.mode = "res_home"
         self.ad.plot_run()  # Execute the command
 
-        excecute_plot(self.ad)
+        execute_plot(self.ad)
+
+        self.set_status(Status.Ready)
 
         self.ad = None
+
+    def stop(self):
+
+        if not self.ad:
+            return
+
+        self.set_status(Status.Stopping)
+        self.ad.transmit_pause_request()
+
+    def pause(self):
+
+        if not self.ad:
+            return
+
+        self.set_status(Status.Pausing)
+        self.ad.transmit_pause_request()
 
     def draw(self, file_path: Union[Path, str]):
         def run_draw():
             my_log(f"start drawing thread {abs_path}")
 
             self.start_time = time.time()
-            self.is_paused = False
             self.report = None
 
-            if not self.is_paused and not self.ad:
+            self.set_status(Status.Drawing)
+
+            if not self.ad:
+                # not paused
                 self.ad = build_plot_ad(abs_path)
                 if self.ad == None:
-                    self.starting = False
+
+                    self.report = "\n------------- Error -------------\n"
+                    self.set_status(Status.Ready)
+
                     return
 
                 # starting new run
@@ -170,17 +216,16 @@ class TracerCommands:
                 self.ad.options.report_time = True  # Enable time and distance estimates
                 self.ad.errors.code = 0
             else:
+                # paused
                 self.ad.options.mode = "res_plot"
                 self.ad.plot_status.stopped = 0
                 self.ad.errors.code = 0
                 self.pause_travel_in += self.ad.plot_status.stats.up_travel_inch
 
-            self.starting = False
-
             # self.ad.options.progress= True
             self.report = None
 
-            excecute_plot(self.ad)
+            execute_plot(self.ad)
 
             end_time = time.time()
             total_time = end_time - self.start_time
@@ -190,38 +235,39 @@ class TracerCommands:
 
             if is_paused:
 
-                self.pause_duration += total_time
+                if self._status == Status.Stopping:
+                    result = "Back Home"
+                    self.back_home()
+                else:
+                    self.pause_duration += total_time
 
-                print(f"cur_travel : {self.cur_travel} / {self.dist_pen_total} ")
-                print(f"pause_travel : {self.pause_travel_in} ")
+                    print(f"cur_travel : {self.cur_travel} / {self.dist_pen_total} ")
+                    print(f"pause_travel : {self.pause_travel_in} ")
 
-                result = (
-                    "----------------------- PAUSED -----------------------------\n"
-                )
-                result += f"duration : {print_time}\n"
-                result += f"Press Run to restart \n"
-                result += "----------------------------------------------------------\n"
-                self.is_paused = True
+                    result = (
+                        "----------------------- PAUSED -----------------------------\n"
+                    )
+                    result += f"duration : {print_time}\n"
+                    result += f"Press Run to restart \n"
+                    result += (
+                        "----------------------------------------------------------\n"
+                    )
+
+                    self.set_status(Status.Paused)
+
             else:
                 result = "----------------------- ENDED -----------------------------\n"
                 result += f"file : {abs_path}\n"
                 result += f"duration : {print_time}\n"
                 result += "----------------------------------------------------------\n"
-                self.is_paused = False
                 self.ad = None
+                self.set_status(Status.Ready)
 
             self.report = result
-
             self.start_time = 0
 
         if not isinstance(file_path, Path):
             file_path = Path(file_path)
-
-        if self.ad and not self.is_paused:
-            self.ad = None
-            return
-
-        self.starting = True
 
         abs_path = str(file_path.resolve())
 
@@ -244,12 +290,12 @@ class TracerCommands:
         # preload the svg in a thread
 
         def run_preload():
-            # my_log("preload" + str(abs_path))
 
             self.ad = build_plot_ad(abs_path, preview=True)
+            self.set_status(Status.Preview)
+
             if self.ad == None:
                 return
-            # ad.plot_setup(abs_path)    # Parse the input file
 
             self.ad.options.preview = True
             self.ad.options.report_time = False  # Enable time and distance estimates
@@ -280,6 +326,8 @@ class TracerCommands:
 
             self.ad = None
 
+            self.set_status(status=Status.Ready)
+
             # print (result)
 
         if not isinstance(file_path, Path):
@@ -295,4 +343,4 @@ class TracerCommands:
         # return result
 
 
-TRACER = TracerCommands()
+PLOTTER = Plotter()

@@ -1,7 +1,7 @@
 from settings import SETTINGS
 import customtkinter as ctk
 
-from pen_commands import TRACER
+from plotter import PLOTTER
 from tools.ctk.base_frame import BaseFrame
 
 
@@ -27,13 +27,13 @@ class PenButtons(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.toggle_bt = ctk.CTkButton(self, text="Toggle", command=TRACER.toggle_pen)
+        self.toggle_bt = ctk.CTkButton(self, text="Toggle", command=PLOTTER.toggle_pen)
         self.toggle_bt.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
 
-        self.up_bt = ctk.CTkButton(self, text="Pen Up", command=TRACER.pen_up)
+        self.up_bt = ctk.CTkButton(self, text="Pen Up", command=PLOTTER.pen_up)
         self.up_bt.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
 
-        self.up_bt = ctk.CTkButton(self, text="Pen Down", command=TRACER.pen_down)
+        self.up_bt = ctk.CTkButton(self, text="Pen Down", command=PLOTTER.pen_down)
         self.up_bt.grid(row=3, column=0, padx=10, pady=10, sticky="ew")
 
 
@@ -81,11 +81,11 @@ class PenSettings(BaseFrame):
 
         if self.prev_up != SETTINGS.pen_pos_up:
             self.prev_up = SETTINGS.pen_pos_up
-            TRACER.pen_up()
+            PLOTTER.pen_up()
 
         if self.prev_down != SETTINGS.pen_pos_down:
             self.prev_down = SETTINGS.pen_pos_down
-            TRACER.pen_down()
+            PLOTTER.pen_down()
 
         # relance toute les demi secondes
         self.after(500, self.set_height)
