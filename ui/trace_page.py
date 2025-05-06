@@ -207,14 +207,19 @@ class TracePage(ctk.CTkFrame):
 
     def update_status(self):
 
-        if PLOTTER.report:
-            self.report.insert(tkinter.END, PLOTTER.report)
-            PLOTTER.report = None
+        try:
+            if PLOTTER.report:
+                self.report.insert(tkinter.END, PLOTTER.report)
+                PLOTTER.report = None
 
-        self.check_pause_timer()
-        self.compute_progress(PLOTTER.ad)
-
-        self.after(250, self.update_status)
+            self.check_pause_timer()
+            self.compute_progress(PLOTTER.ad)
+        except Exception as ex:
+            txt_ex = "------------------\nException occured\n"
+            txt_ex += str(ex) + "\n-----------------\n"
+            self.report.insert(tkinter.END, txt_ex)
+        finally:
+            self.after(500, self.update_status)
 
     def check_pause_timer(self):
 
