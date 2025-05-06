@@ -73,6 +73,15 @@ class CalibrationPage(ctk.CTkFrame):
             label="page y size (mm)", value=297, int_mode=False
         )
 
+        self.corner_size_label = self.test_page.label(text="corner size (mm)")
+
+        self.corner_size = ctk.IntVar(self, 50)
+        self.corner_size_slider = self.test_page.slider(
+            from_=0, to=200, variable=self.corner_size, command=self.applyTexts
+        )
+
+        self.test_page.Button("Trace Page", self.trace_page)
+
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=10)
 
@@ -82,7 +91,13 @@ class CalibrationPage(ctk.CTkFrame):
 
         self.pack(side="left", fill="both", anchor="ne", expand=True)
 
-        self.test_page.Button("Trace Page", self.trace_page)
+        self.applyTexts()
+
+    def applyTexts(self, value=None):
+
+        self.corner_size_label.configure(
+            text=f"Corner Size : {self.corner_size.get()} mm"
+        )
 
     def on_page_change(self, value):
 
@@ -108,8 +123,8 @@ class CalibrationPage(ctk.CTkFrame):
     def trace_page(self):
 
         size = (self.page_x_size.get(), self.page_y_size.get())
-        create_page("temp.svg", size, 5)
-
         svg_template_path = Path(__file__).parent.parent / "svg_templates"
+        create_page(svg_template_path / "temp.svg", size, self.corner_size.get())
+
         SHORTCUTS.trace.load_svg(svg_template_path / "temp.svg")
         SHORTCUTS.trace.run()

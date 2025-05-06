@@ -6,7 +6,6 @@ pen_pos_down: 78
 pen_pos_up: 77
 pen_rate_lower: 50
 pen_rate_raise: 75
-profile_name: aa
 random_start: false
 reordering: 2
 report_time: false

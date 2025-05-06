@@ -1,7 +1,7 @@
 clip_to_page: true
 inch_to_mm: 25.4
 model: 5
-native_res_factor: 1250.0
+native_res_factor: 1270.0
 switch_xy: true
 x_travel_SEA1_mm: 864
 x_travel_SEA2_mm: 594

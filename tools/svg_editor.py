@@ -40,13 +40,13 @@ class SvgEditor:
             self.tree.write(file_path, encoding="utf-8", xml_declaration=True)
 
 
-def create_page(file_name, size, corner_len):
+def create_page(file_path, size, corner_len):
     """Create a new SVG page with the specified size and corner length."""
 
     svg = SvgEditor()
     svg_template_path = Path(__file__).parent.parent / "svg_templates"
-    file_path = svg_template_path / "empty.svg"
-    svg.load_svg(file_path)
+    src_file_path = svg_template_path / "empty.svg"
+    svg.load_svg(src_file_path)
 
     x, y = size
 
@@ -64,7 +64,6 @@ def create_page(file_name, size, corner_len):
     svg.add_path(path_data_3, style=style, element_id="corner_3")
     svg.add_path(path_data_4, style=style, element_id="corner_4")
 
-    file_path = svg_template_path / file_name
     svg.save_svg(file_path)
 
 
