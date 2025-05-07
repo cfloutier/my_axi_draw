@@ -1,5 +1,6 @@
 from pathlib import Path
-from settings import PLOTTER_PARAMS, SHORTCUTS
+from plotter import PLOTTER
+from settings import PLOTTER_PARAMS
 from tools.ctk.base_frame import BaseFrame
 import customtkinter as ctk
 
@@ -126,5 +127,4 @@ class CalibrationPage(ctk.CTkFrame):
         svg_template_path = Path(__file__).parent.parent / "svg_templates"
         create_page(svg_template_path / "temp.svg", size, self.corner_size.get())
 
-        SHORTCUTS.trace.load_svg(svg_template_path / "temp.svg")
-        SHORTCUTS.trace.run()
+        PLOTTER.draw(svg_template_path / "temp.svg")

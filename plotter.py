@@ -1,4 +1,5 @@
 from enum import Enum
+import logging
 from pathlib import Path
 import time
 from typing import Union
@@ -167,8 +168,6 @@ class Plotter:
         self.ad.options.mode = "res_home"
         self.ad.plot_run()  # Execute the command
 
-        execute_plot(self.ad)
-
         self.set_status(Status.Ready)
 
         self.ad = None
@@ -190,6 +189,9 @@ class Plotter:
         self.ad.transmit_pause_request()
 
     def draw(self, file_path: Union[Path, str]):
+
+        logging.info(f"draw  {file_path}")
+
         def run_draw():
             my_log(f"start drawing thread {abs_path}")
 
@@ -233,8 +235,9 @@ class Plotter:
 
             is_paused = self.ad.plot_status.stopped == 103
 
-            if is_paused:
+            logging.info(f"is_paused {is_paused}")
 
+            if is_paused:
                 if self._status == Status.Stopping:
                     result = "Back Home"
                     self.back_home()
@@ -288,6 +291,8 @@ class Plotter:
 
     def preload(self, file_path: Union[Path, str]):
         # preload the svg in a thread
+
+        logging.info(f"preload  {file_path}")
 
         def run_preload():
 

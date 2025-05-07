@@ -1,5 +1,5 @@
 import coloredlogs
-from settings import PLOTTER_PARAMS, SETTINGS, INTERNAL_SETTINGS, SHORTCUTS
+from settings import PLOTTER_PARAMS, SETTINGS, INTERNAL_SETTINGS
 import globals
 
 import tkinter as tk
@@ -26,8 +26,6 @@ class TabView(ctk.CTkTabview):
         self.pen_page = PenPage(self.pen_tab)
         self.speed_page = SpeedPage(self.speed_tab)
         self.calibration_page = CalibrationPage(self.calibration_tab)
-
-        SHORTCUTS.trace = self.trace_page
 
         self.set("Trace")
 

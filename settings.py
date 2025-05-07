@@ -247,13 +247,3 @@ class OverloadedSettings(BaseSettings):
 INTERNAL_SETTINGS = InternalSettings()
 PLOTTER_PARAMS = PlotterParams()
 SETTINGS = OverloadedSettings()
-
-
-class Shortcuts:
-    def __init__(self):
-        self.trace: "TracePage" = None
-
-
-SHORTCUTS = Shortcuts()
-
-# PLOTTER_PARAMS.save()

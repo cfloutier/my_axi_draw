@@ -115,20 +115,17 @@ class TracePage(ctk.CTkFrame):
         elif status == Status.Ready:
 
             self.load_bt.configure(state="normal")
-
             self.run_bt.configure(state="normal", text="Run")
-
             self.pause_bt.configure(state="disabled")
             self.stop_bt.configure(state="disabled")
-
             self.disable_bt.configure(state="normal")
+
             self.progress.set_with_text(100, "")
 
         elif status == Status.Drawing:
 
             self.load_bt.configure(state="disabled")
             self.run_bt.configure(state="disabled")
-
             self.pause_bt.configure(state="normal")
             self.stop_bt.configure(state="normal")
             self.disable_bt.configure(state="disabled")
@@ -141,11 +138,10 @@ class TracePage(ctk.CTkFrame):
             self.load_bt.configure(state="normal")
 
             self.run_bt.configure(state="normal", text="Continue")
-
             self.pause_bt.configure(state="disabled")
             self.stop_bt.configure(state="normal")
-
             self.disable_bt.configure(state="normal")
+
             self.stop_pause_timer()
 
     def start_pause_timer(self):
@@ -159,6 +155,7 @@ class TracePage(ctk.CTkFrame):
 
         if PLOTTER.ad:
             my_log("trace in progress")
+            return
 
         PLOTTER.disable_motors()
 
