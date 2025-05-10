@@ -87,10 +87,6 @@ class PlotterParams(BaseSettings):
         # Resolution is native_res_factor * sqrt(2) steps/inch in Low Resolution  (Approx 1437 steps/in)
         #       and 2 * native_res_factor * sqrt(2) steps/inch in High Resolution (Approx 2874 steps/in)
 
-        self.clip_to_page = (
-            True  # Clip plotting area to SVG document size. Default: True
-        )
-
         self.inch_to_mm = 25.4
 
         self.switch_xy = True
@@ -155,8 +151,6 @@ class PlotterParams(BaseSettings):
             ad.params.x_travel_V3A3 = self.x_travel_V3A3_mm / self.inch_to_mm
             ad.params.y_travel_V3A3 = self.y_travel_V3A3_mm / self.inch_to_mm
 
-        ad.params.clip_to_page = self.clip_to_page
-
     def reset(self):
         new_values = PlotterParams()
         for key, value in new_values.__dict__.items():
@@ -187,11 +181,6 @@ class OverloadedSettings(BaseSettings):
         )
         self.report_time = False  # Report time elapsed. Default False
 
-        self.model = 6  # AxiDraw Model (1-6).
-        # 1: AxiDraw V2 or V3 (Default). 2: AxiDraw V3/A3 or SE/A3.
-        # 3: AxiDraw V3 XLX. 4: AxiDraw MiniKit.
-        # 5: AxiDraw SE/A1.  6: AxiDraw SE/A2.
-
         self.resolution = 1  # Resolution: (1-2):
         # 1: High resolution (smoother, slightly slower) (Default)
         # 2: Low resolution (coarser, slightly faster)
@@ -208,6 +197,10 @@ class OverloadedSettings(BaseSettings):
         # 2: Full; Also allow path reversal
         # 4: None; Strictly preserve file order
 
+        self.clip_to_page = (
+            True  # Clip plotting area to SVG document size. Default: True
+        )
+
         self.random_start = (
             False  # Randomize start locations of closed paths. Default False
         )
@@ -222,7 +215,10 @@ class OverloadedSettings(BaseSettings):
     def apply(self, ad: axidraw.AxiDraw):
 
         for key, value in self.__dict__.items():
-            setattr(ad.options, key, value)
+            if hasattr(ad.options, key):
+                setattr(ad.options, key, value)
+
+        ad.params.clip_to_page = self.clip_to_page
 
     def _file_path(self, name=None):
         if not name:

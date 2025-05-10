@@ -1,6 +1,6 @@
 accel: 68.36082474226805
 auto_rotate: false
-clip_to_page: false
+clip_to_page: 1
 const_speed: 1
 model: 6
 native_res_factor: 1016.0
@@ -12,6 +12,6 @@ random_start: false
 reordering: 2
 report_time: false
 resolution: 1
-speed_pendown: 24.346649484536083
+speed_pendown: 12.737113402061855
 speed_penup: 57.77190721649484
 svg_file: null

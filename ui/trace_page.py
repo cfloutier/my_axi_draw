@@ -27,18 +27,14 @@ class TracePage(ctk.CTkFrame):
             "Disable XY", command=self.disable_motors
         )
 
-        self.status_label = self.buttons_bar.label("iddle")
-
-        self.disable_bt = self.buttons_bar.button(
-            "Disable XY", command=self.disable_motors
-        )
-
         self.auto_pause = self.buttons_bar.switch("Auto Pause", None)
         self.auto_pause.set(False)
         self.auto_pause_duration = self.buttons_bar.number_edit(
             "Duration (min) : ", 10, False, inline=False
         )
         self.auto_pause_time = None
+
+        self.status_label = self.buttons_bar.label("iddle")
 
         self.buttons_bar.grid(
             row=0, column=0, rowspan=2, sticky="ne", pady=5, padx=(5, 10)
@@ -94,7 +90,7 @@ class TracePage(ctk.CTkFrame):
 
     def on_status(self, status: Status):
 
-        # print(f"set_status {status}")
+        print(f"set_status {status}")
 
         self.status_label.configure(text=status.name)
 

@@ -36,6 +36,11 @@ class PenButtons(ctk.CTkFrame):
         self.up_bt = ctk.CTkButton(self, text="Pen Down", command=PLOTTER.pen_down)
         self.up_bt.grid(row=3, column=0, padx=10, pady=10, sticky="ew")
 
+        self.disable_bt = ctk.CTkButton(
+            self, text="Disable XY", command=PLOTTER.disable_motors
+        )
+        self.disable_bt.grid(row=4, column=0, padx=10, pady=10, sticky="ew")
+
 
 class PenSettings(BaseFrame):
     """frame with the pen settings"""
@@ -95,7 +100,6 @@ class PenSettings(BaseFrame):
         self.pen_down_value.set(SETTINGS.pen_pos_down)
 
     def applyTexts(self):
-
         self.pen_up_label.configure(text=f"pen up : {SETTINGS.pen_pos_up}")
         self.pen_down_label.configure(text=f"pen down : {SETTINGS.pen_pos_down}")
 

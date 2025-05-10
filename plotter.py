@@ -177,8 +177,11 @@ class Plotter:
         if not self.ad:
             return
 
-        self.set_status(Status.Stopping)
-        self.ad.transmit_pause_request()
+        if self._status == Status.Paused:
+            self.back_home()
+        else:
+            self.set_status(Status.Stopping)
+            self.ad.transmit_pause_request()
 
     def pause(self):
 

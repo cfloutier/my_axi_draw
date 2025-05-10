@@ -6,7 +6,8 @@ import tkinter as tk
 import customtkinter as ctk
 from ui.pen_page import PenPage
 from ui.speed_page import SpeedPage
-from ui.settings_page import SettingsFrame
+from ui.trace_options_page import TraceOptionsPage
+from ui.settings_frame import SettingsFrame
 from ui.calibration_page import CalibrationPage
 from ui.trace_page import TracePage
 
@@ -19,15 +20,17 @@ class TabView(ctk.CTkTabview):
         self.trace_tab = self.add("Trace")
         self.pen_tab = self.add("Pen")
         self.speed_tab = self.add("Speed")
+        self.options_tab = self.add("Options")
         self.calibration_tab = self.add("Calibration")
 
         # add widgets on tabs
         self.trace_page = TracePage(self.trace_tab)
         self.pen_page = PenPage(self.pen_tab)
         self.speed_page = SpeedPage(self.speed_tab)
+        self.options_page = TraceOptionsPage(self.options_tab)
         self.calibration_page = CalibrationPage(self.calibration_tab)
 
-        self.set("Trace")
+        self.set("Options")
 
 
 class MainWindow(ctk.CTk):
@@ -50,6 +53,7 @@ class MainWindow(ctk.CTk):
     def refresh_ui(self):
         self.tab_view.pen_page.pen_settings.set()
         self.tab_view.speed_page.set()
+        self.tab_view.options_page.set()
 
     def log(self, txt):
         if self.last_log == txt:
