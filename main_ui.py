@@ -56,8 +56,8 @@ class MainWindow(ctk.CTk):
         self.tab_view.options_page.set()
 
     def log(self, txt):
-        if self.last_log == txt:
-            return
+        # if self.last_log == txt:
+        #     return
 
         self.last_log = txt
         self.tab_view.trace_page.log(txt)

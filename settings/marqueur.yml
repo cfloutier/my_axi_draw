@@ -1,5 +1,5 @@
-accel: 68.36082474226805
-auto_rotate: false
+accel: 65.55412371134021
+auto_rotate: 0
 clip_to_page: 1
 const_speed: 1
 model: 6
@@ -7,11 +7,11 @@ native_res_factor: 1016.0
 pen_pos_down: 43
 pen_pos_up: 0
 pen_rate_lower: 35.19072164948454
-pen_rate_raise: 78.3118556701031
+pen_rate_raise: 68.87113402061856
 random_start: false
-reordering: 2
+reordering: 0
 report_time: false
 resolution: 1
 speed_pendown: 12.737113402061855
-speed_penup: 57.77190721649484
+speed_penup: 47.055412371134025
 svg_file: null

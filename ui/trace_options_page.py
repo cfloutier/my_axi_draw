@@ -30,6 +30,9 @@ class TraceOptionsPage(BaseFrame):
         self.clip_to_page = self.switch(
             text="Clip plotting area to SVG document size", command=self.apply
         )
+        self.auto_rotate = self.switch(
+            text="Auto-select portrait vs landscape orientation", command=self.apply
+        )
 
         # read conf
         self.set()
@@ -37,6 +40,7 @@ class TraceOptionsPage(BaseFrame):
     def set(self):
         self.reordering.set(reordering_combo_values[SETTINGS.reordering])
         self.clip_to_page.set(SETTINGS.clip_to_page)
+        self.auto_rotate.set(SETTINGS.auto_rotate)
 
         self.applyTexts()
 
@@ -59,6 +63,10 @@ class TraceOptionsPage(BaseFrame):
 
         if SETTINGS.clip_to_page != self.clip_to_page.get():
             SETTINGS.clip_to_page = self.clip_to_page.get()
+            changed = True
+
+        if SETTINGS.auto_rotate != self.auto_rotate.get():
+            SETTINGS.auto_rotate = self.auto_rotate.get()
             changed = True
 
         if changed:
