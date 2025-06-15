@@ -30,7 +30,7 @@ class TabView(ctk.CTkTabview):
         self.options_page = TraceOptionsPage(self.options_tab)
         self.calibration_page = CalibrationPage(self.calibration_tab)
 
-        self.set("Options")
+        self.set("Trace")
 
 
 class MainWindow(ctk.CTk):

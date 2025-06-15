@@ -34,6 +34,10 @@ class TraceOptionsPage(BaseFrame):
             text="Auto-select portrait vs landscape orientation", command=self.apply
         )
 
+        self.hiding = self.switch(
+            text="Auto hide lines behing polygons", command=self.apply
+        )
+
         # read conf
         self.set()
 
@@ -41,6 +45,7 @@ class TraceOptionsPage(BaseFrame):
         self.reordering.set(reordering_combo_values[SETTINGS.reordering])
         self.clip_to_page.set(SETTINGS.clip_to_page)
         self.auto_rotate.set(SETTINGS.auto_rotate)
+        self.hiding.set(SETTINGS.hiding)
 
         self.applyTexts()
 
@@ -67,6 +72,10 @@ class TraceOptionsPage(BaseFrame):
 
         if SETTINGS.auto_rotate != self.auto_rotate.get():
             SETTINGS.auto_rotate = self.auto_rotate.get()
+            changed = True
+
+        if SETTINGS.hiding != self.hiding.get():
+            SETTINGS.hiding = self.hiding.get()
             changed = True
 
         if changed:

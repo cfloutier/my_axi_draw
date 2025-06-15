@@ -94,12 +94,7 @@ class TracePage(ctk.CTkFrame):
 
         self.status_label.configure(text=status.name)
 
-        if (
-            status == Status.Pausing
-            or status == Status.Stopping
-            or status == Status.Homing
-            or status == Status.Preview
-        ):
+        if status == Status.Preview:
 
             # Disable all buttons
             self.load_bt.configure(state="disabled")
@@ -107,6 +102,18 @@ class TracePage(ctk.CTkFrame):
             self.run_bt.configure(state="disabled")
             self.stop_bt.configure(state="disabled")
             self.disable_bt.configure(state="disabled")
+
+        elif (
+            status == Status.Pausing
+            or status == Status.Stopping
+            or status == Status.Homing
+        ):
+            # Disable all buttons
+            self.load_bt.configure(state="normal")
+            self.pause_bt.configure(state="normal")
+            self.run_bt.configure(state="normal")
+            self.stop_bt.configure(state="normal")
+            self.disable_bt.configure(state="normal")
 
         elif status == Status.Ready:
 

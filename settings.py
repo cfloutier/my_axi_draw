@@ -201,6 +201,8 @@ class OverloadedSettings(BaseSettings):
             True  # Clip plotting area to SVG document size. Default: True
         )
 
+        self.hiding = True  # hidding shape. Default: True
+
         self.random_start = (
             False  # Randomize start locations of closed paths. Default False
         )
@@ -219,6 +221,7 @@ class OverloadedSettings(BaseSettings):
                 setattr(ad.options, key, value)
 
         ad.params.clip_to_page = self.clip_to_page
+        ad.params.hiding = self.hiding
 
     def _file_path(self, name=None):
         if not name:
