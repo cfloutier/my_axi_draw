@@ -63,7 +63,7 @@ class PenSettings(BaseFrame):
             from_=0, to=100, variable=self.pen_down_value, command=self.apply
         )
 
-        self.separator()
+        self.separator(columnspan=2)
 
         self.prev_up = SETTINGS.pen_pos_up
         self.prev_down = SETTINGS.pen_pos_down

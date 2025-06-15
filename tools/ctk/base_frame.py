@@ -58,8 +58,8 @@ class BaseFrame(ctk.CTkFrame):
 
         return sw
 
-    def button(self, text, command, inline=False, width=150):
-        sw = ctk.CTkButton(self, text=text, command=command, width=width)
+    def button(self, text, command, inline=False, width=150, height=30):
+        sw = ctk.CTkButton(self, text=text, command=command, width=width, height=height)
         if inline:
             sw.grid(
                 row=self.row,
@@ -158,10 +158,12 @@ class BaseFrame(ctk.CTkFrame):
 
         return slider_
 
-    def separator(self):
+    def separator(self, length=200, columnspan=1):
 
-        sep = Separator(self, length=200)
-        sep.grid(row=self.row, column=0, columnspan=2, padx=30, pady=10, sticky="ew")
+        sep = Separator(self, length=100, multiply=length)
+        sep.grid(
+            row=self.row, column=0, columnspan=columnspan, padx=30, pady=10, sticky="ew"
+        )
         self.next_line()
 
         return sep

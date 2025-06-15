@@ -17,15 +17,23 @@ class TracePage(ctk.CTkFrame):
 
         self.buttons_bar = BaseFrame(self)
 
-        self.load_bt = self.buttons_bar.button("Load svg", command=self.load_svg)
-        self.load_bt = self.buttons_bar.button("Reload", command=self.reload_last)
+        width_larger_bt = 200
+        width_sep = 10
 
-        self.run_bt = self.buttons_bar.button("Run", command=self.run)
-        self.pause_bt = self.buttons_bar.button("Pause", command=PLOTTER.pause)
-        self.stop_bt = self.buttons_bar.button("Stop", command=PLOTTER.stop)
-        self.disable_bt = self.buttons_bar.button(
-            "Disable XY", command=self.disable_motors
+        self.load_bt = self.buttons_bar.button(
+            "Load svg", command=self.load_svg, width=width_larger_bt
         )
+        self.load_bt = self.buttons_bar.button(
+            "Reload", command=self.reload_last, width=width_larger_bt
+        )
+
+        self.buttons_bar.separator(width_sep)
+
+        self.disable_bt = self.buttons_bar.button(
+            "Disable XY", command=self.disable_motors, width=width_larger_bt
+        )
+
+        self.buttons_bar.separator(width_sep)
 
         self.auto_pause = self.buttons_bar.switch("Auto Pause", None)
         self.auto_pause.set(False)
@@ -34,11 +42,39 @@ class TracePage(ctk.CTkFrame):
         )
         self.auto_pause_time = None
 
+        self.buttons_bar.separator(width_sep)
+
+        self.run_bar = BaseFrame(self.buttons_bar)
+        self.run_bar.grid(
+            row=self.buttons_bar.row,
+            column=self.buttons_bar.col,
+            sticky="w",
+        )
+
+        self.buttons_bar.row += 1
+        width_bt = 70
+        height_bt = 50
+
+        self.buttons_bar.configure(height=150)
+        self.run_bt = self.run_bar.button(
+            "Run", command=self.run, inline=True, width=width_bt, height=height_bt
+        )
+        self.pause_bt = self.run_bar.button(
+            "Pause",
+            command=PLOTTER.pause,
+            inline=True,
+            width=width_bt,
+            height=height_bt,
+        )
+        self.stop_bt = self.run_bar.button(
+            "Stop", command=PLOTTER.stop, inline=True, width=width_bt, height=height_bt
+        )
+
+        self.buttons_bar.separator(width_sep)
+
         self.status_label = self.buttons_bar.label("iddle")
 
-        self.buttons_bar.grid(
-            row=0, column=0, rowspan=2, sticky="ne", pady=5, padx=(5, 10)
-        )
+        self.buttons_bar.grid(row=0, column=0, sticky="nes", pady=5, padx=(5, 10))
         self.report = ctk.CTkTextbox(master=self, width=20)
         self.report.grid(row=0, column=1, sticky="news")
 
