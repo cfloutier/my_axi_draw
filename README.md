@@ -6,7 +6,7 @@ a tool using axi draw api used to pilot my tracer
 WIP
 
 * install python
-* install the axidraw python api : https://axidraw.com/doc/py_api 
+* install the axidraw python api : https://axidraw.com/doc/py_api
   * download the package and unzip in a local folder named [AXIDRAW_FOLDER]
   * follow the installation.txt
 
@@ -18,11 +18,11 @@ WIP
   #source ./venv/bin/activate # bash/zsh shells, like on mac, ubuntu
   .\venv\Scripts\Activate.ps1 # windows powershell
 
-  # go to the api folder 
+  # go to the api folder
   cd [AXIDRAW_FOLDER]
 
   # install dependencies
-  pip install . 
+  pip install .
 ```
 
 Note in vscode, I've added this settings because the path to axidraw was not found
@@ -35,11 +35,16 @@ in `.vscode\settings.json` :
     "python.analysis.extraPaths": ["C:\\dev\\__tracer\\api\\AxiDraw_API\\AxiDraw_API_396"]
 }
 ```
+vscode : define the python interpreter in the venv folder (venv/Script/python.exe)
 
+pre-commit :
 
+```powershell
+#activate the venv
+.\venv\Scripts\Activate.ps1 # windows powershell
+# adds pre-commit to the env
+python install pre-commit
 
-
-
-
-
-
+# install pre-commit to the folder
+pre-commit install
+```
