@@ -37,13 +37,15 @@ in `.vscode\settings.json` :
 ```
 vscode : define the python interpreter in the venv folder (venv/Script/python.exe)
 
-pre-commit :
+* pre-commit :
 
 ```powershell
 #activate the venv
 .\venv\Scripts\Activate.ps1 # windows powershell
 # adds pre-commit to the env
-python install pre-commit
+pip install pre-commit
+pip install customtkinter
+pip install coloredlogs
 
 # install pre-commit to the folder
 pre-commit install
