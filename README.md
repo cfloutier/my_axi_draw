@@ -50,3 +50,5 @@ pip install coloredlogs
 # install pre-commit to the folder
 pre-commit install
 ```
+
+under windows 11 i'm got to install Microsoft visual C++ 2015 redistribuables

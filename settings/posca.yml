@@ -1,12 +1,13 @@
-accel: 75
+accel: 56.34810126582278
 auto_rotate: false
 clip_to_page: false
 const_speed: 1
+hiding: 1
 inch_to_mm: 25.4
 model: 6
 native_res_factor: 1016.0
-pen_pos_down: 62
-pen_pos_up: 4
+pen_pos_down: 74
+pen_pos_up: 97
 pen_rate_lower: 17.5
 pen_rate_raise: 40.10156249999999
 random_start: false
@@ -14,7 +15,7 @@ reordering: 4
 report_time: false
 resolution: 1
 speed_pendown: 14.492187500000002
-speed_penup: 48.7139175257732
+speed_penup: 40.68354430379747
 svg_file: null
 switch_xy: true
 x_travel_SEA1_mm: 864

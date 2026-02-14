@@ -100,6 +100,15 @@ class TracePage(ctk.CTkFrame):
 
         self.update_status()
 
+    def _report(self, txt):
+
+        yscroll = self.report.yview()[1] == 1
+        print(yscroll)
+
+        self.report.insert(tkinter.END, txt)
+        if yscroll:
+            self.report.see("end")
+
     def load_svg(self, filename=None):
         if not filename:
             filename = ctk.filedialog.askopenfilename(
@@ -109,7 +118,7 @@ class TracePage(ctk.CTkFrame):
             )
 
         if filename:
-            self.report.insert(tkinter.END, "Loading in progress\n")
+            self._report("Loading in progress\n")
             INTERNAL_SETTINGS.svg_file = filename
             PLOTTER.preload(filename)
 
@@ -245,7 +254,7 @@ class TracePage(ctk.CTkFrame):
 
         try:
             if PLOTTER.report:
-                self.report.insert(tkinter.END, PLOTTER.report)
+                self._report(PLOTTER.report)
                 PLOTTER.report = None
 
             self.check_pause_timer()
@@ -253,7 +262,7 @@ class TracePage(ctk.CTkFrame):
         except Exception as ex:
             txt_ex = "------------------\nException occured\n"
             txt_ex += str(ex) + "\n-----------------\n"
-            self.report.insert(tkinter.END, txt_ex)
+            self._report(txt_ex)
         finally:
             self.after(500, self.update_status)
 
@@ -265,4 +274,4 @@ class TracePage(ctk.CTkFrame):
                 PLOTTER.pause()
 
     def log(self, txt):
-        self.report.insert(tkinter.END, txt + "\n")
+        self._report(txt + "\n")
