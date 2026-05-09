@@ -3,6 +3,8 @@ from datetime import timedelta
 
 def td_format(td_object: timedelta):
     seconds = int(td_object.total_seconds())
+    if seconds < 0:
+        return None
     if seconds <= 1:
         return f"{seconds}.{td_object.microseconds/10000:2.0f} ms"
     periods = [

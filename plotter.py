@@ -4,6 +4,7 @@ from pathlib import Path
 import time
 from typing import Union
 from globals import my_log
+from lxml import etree
 from pyaxidraw import axidraw
 from settings import SETTINGS, PLOTTER_PARAMS
 import threading
@@ -165,6 +166,8 @@ class Plotter:
 
         self.set_status(Status.Homing)
 
+        if not hasattr(self.ad.document, "getroot"):
+            self.ad.document = etree.ElementTree(self.ad.document)
         self.ad.options.mode = "res_home"
         self.ad.plot_run()  # Execute the command
 
@@ -198,7 +201,6 @@ class Plotter:
         def run_draw():
             my_log(f"start drawing thread {abs_path}")
 
-            self.start_time = time.time()
             self.report = None
 
             self.set_status(Status.Drawing)
@@ -219,9 +221,14 @@ class Plotter:
 
                 self.ad.options.preview = False
                 self.ad.options.report_time = True  # Enable time and distance estimates
+                self.ad.options.digest = (
+                    1  # cache processed paths as plob for fast resume
+                )
                 self.ad.errors.code = 0
             else:
-                # paused
+                # paused - fix document type: digest=1 leaves document as lxml Element, not ElementTree
+                if not hasattr(self.ad.document, "getroot"):
+                    self.ad.document = etree.ElementTree(self.ad.document)
                 self.ad.options.mode = "res_plot"
                 self.ad.plot_status.stopped = 0
                 self.ad.errors.code = 0
@@ -229,6 +236,9 @@ class Plotter:
 
             # self.ad.options.progress= True
             self.report = None
+            self.start_time = (
+                time.time()
+            )  # start chrono after loading, just before first move
 
             execute_plot(self.ad)
 

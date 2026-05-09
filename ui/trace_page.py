@@ -227,17 +227,31 @@ class TracePage(ctk.CTkFrame):
                 cur_time = time.time()
 
                 elapsed = cur_time - PLOTTER.start_time
-                remaining = total_time_s - (elapsed + PLOTTER.pause_duration)
-                total_str = td_format(timedelta(seconds=total_time_s))
+                total_elapsed = elapsed + PLOTTER.pause_duration
 
-                remaining = td_format(timedelta(seconds=remaining))
+                # Dynamically correct total estimate based on observed pace.
+                # measured_total = total_elapsed / progress is the best real-time estimate.
+                # Blend from original to measured linearly between 5% and 15% progress
+                # to avoid instability at low progress values.
+                if progress >= 0.05:
+                    alpha = min((progress - 0.05) / 0.10, 1.0)
+                    measured_total = total_elapsed / progress
+                    corrected_total = (
+                        1 - alpha
+                    ) * total_time_s + alpha * measured_total
+                else:
+                    corrected_total = total_time_s
+
+                remaining_s = corrected_total - total_elapsed
+                total_str = td_format(timedelta(seconds=corrected_total))
+
+                remaining = td_format(timedelta(seconds=remaining_s))
 
             content = ""
 
             if not remaining:
-                remaining = total_time_s - elapsed - PLOTTER.pause_duration
-                remaining = td_format(timedelta(seconds=remaining))
-                content = f"{progress*100:2.1f}% - ending... total {total_str}"
+                overtime = td_format(timedelta(seconds=-remaining_s))
+                content = f"{progress*100:2.1f}% - overtime +{overtime} / {total_str}"
             else:
                 content = f"{progress*100:2.1f}% - {remaining} / {total_str}"
 

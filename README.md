@@ -1,54 +1,104 @@
 # my_axi_draw
-a tool using axi draw api used to pilot my tracer
 
-# installation
+Personal GUI tool to control an **AxiDraw** plotter via the official Python API.
+Load an SVG file, preview the estimated drawing duration, and control execution (pause, resume, stop, return home) with real-time progress tracking.
 
-WIP
+---
 
-* install python
-* install the axidraw python api : https://axidraw.com/doc/py_api
-  * download the package and unzip in a local folder named [AXIDRAW_FOLDER]
-  * follow the installation.txt
+## Project structure
 
-```powershell
-  # in this folder. creates the local virtual env in the venv folder (ignored in git)
-  python -m venv venv
-  # Activate the environment:
+```
+main_ui.py          # Entry point — main window with tabs
+plotter.py          # Plotter control logic (state machine, threading)
+settings.py         # Settings management (YAML profiles, hardware params)
+globals.py          # Shared logger
+toggle.py           # Standalone toggle utility
 
-  #source ./venv/bin/activate # bash/zsh shells, like on mac, ubuntu
-  .\venv\Scripts\Activate.ps1 # windows powershell
+ui/
+  trace_page.py         # Main tab: load SVG, run/pause/stop, progress tracking
+  pen_page.py           # Pen tab: up/down positions, manual control
+  speed_page.py         # Speed tab: speeds, acceleration, raise/lower rates
+  trace_options_page.py # Options tab: path reordering, clipping, auto-rotate
+  calibration_page.py   # Calibration tab: model, resolution, test SVG generation
+  settings_frame.py     # Profile bar (select, save, reset)
 
-  # go to the api folder
-  cd [AXIDRAW_FOLDER]
+settings/
+  default.yml       # Default profile
+  internal.yml      # App internal state (current file, active profile)
+  plotter.yml       # Hardware parameters (model, dimensions, resolution)
+  *.yml             # Profiles per pen type (bic, marker, posca…)
 
-  # install dependencies
-  pip install .
+tools/
+  svg_editor.py     # SVG XML manipulation (editing, test SVG generation)
+  nested_dict.py    # Dot-notation access to nested config dicts
+  time.py           # Duration formatting (timedelta → human-readable)
+  fs.py             # File system utilities
+  ctk/              # Reusable CustomTkinter widgets
+    base_frame.py       # Base frame with automatic layout
+    edit_boxes.py       # Numeric input with validation
+    progress_bar.py     # Progress bar with centered text overlay
+    separator.py        # Visual separator
+
+AxiDraw_API/        # Local PyAxiDraw API (v3.9.6)
 ```
 
-Note in vscode, I've added this settings because the path to axidraw was not found
+---
 
-in `.vscode\settings.json` :
+## Installation
+
+- Install Python
+- Install the AxiDraw API: https://axidraw.com/doc/py_api
+  - Download and unzip into a local folder `[AXIDRAW_FOLDER]`
+  - Follow the included `Installation.txt`
+
+```powershell
+# Create the local virtual environment
+python -m venv venv
+
+# Activate the environment (Windows PowerShell)
+.\venv\Scripts\Activate.ps1
+
+# Go to the API folder and install dependencies
+cd [AXIDRAW_FOLDER]
+pip install .
+
+# Go back to the project folder and install UI dependencies
+cd [PROJECT_FOLDER]
+pip install customtkinter coloredlogs
+```
+
+**VSCode note**: if the axidraw path is not resolved, add to `.vscode/settings.json`:
 
 ```json
 {
-
     "python.analysis.extraPaths": ["C:\\dev\\__tracer\\api\\AxiDraw_API\\AxiDraw_API_396"]
 }
 ```
-vscode : define the python interpreter in the venv folder (venv/Script/python.exe)
 
-* pre-commit :
+Set the Python interpreter to `venv/Scripts/python.exe`.
+
+**Windows 11**: install Microsoft Visual C++ 2015 Redistributables if needed.
+
+### Pre-commit (optional)
 
 ```powershell
-#activate the venv
-.\venv\Scripts\Activate.ps1 # windows powershell
-# adds pre-commit to the env
+.\venv\Scripts\Activate.ps1
 pip install pre-commit
-pip install customtkinter
-pip install coloredlogs
-
-# install pre-commit to the folder
 pre-commit install
 ```
 
-under windows 11 i'm got to install Microsoft visual C++ 2015 redistribuables
+---
+
+## Changelog
+
+### 2026-05-09
+- **Fast resume after pause**: enabled plob cache (`digest=1`) at draw start. The AxiDraw lib stores processed paths as a simplified format (polylines) after the first pass. On resume, the document is recognized as a valid plob and `prepare_document()` is skipped — resuming is near-instant regardless of SVG complexity.
+- **Fix crash on resume**: `digest=1` left `document` as `lxml.etree._Element` instead of `ElementTree`, causing a crash on `document.getroot()`. Fixed before each `plot_run()` call on a paused object (`back_home` and `res_plot`).
+
+### Earlier
+- Fixed remaining time not adjusted during pauses
+- Fixed UI layout issues
+- Fixed progress bar text rendering
+- Calibration page: added A6/A5/A4/A3/A2 support with precision slider
+- Auto-pause feature (configurable timer, useful for refilling pen)
+- Resume with pen height changes between runs
