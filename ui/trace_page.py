@@ -93,6 +93,8 @@ class TracePage(ctk.CTkFrame):
 
         self.pack(side="left", fill="both", expand=True)
 
+        self._plotter_status = Status.Iddle
+
         PLOTTER.status_listenners.append(self.on_status)
 
         if INTERNAL_SETTINGS.auto_load_svg:
@@ -137,6 +139,7 @@ class TracePage(ctk.CTkFrame):
 
         print(f"set_status {status}")
 
+        self._plotter_status = status
         self.status_label.configure(text=status.name)
 
         if status == Status.Preview:
@@ -215,39 +218,41 @@ class TracePage(ctk.CTkFrame):
         total_travel = PLOTTER.cur_travel
         distance_total = PLOTTER.dist_pen_total
 
-        # print(f"{total_travel} / {distance_total}")
+        if distance_total == 0:
+            return
 
-        if distance_total != 0:
-            progress = total_travel / distance_total
+        progress = total_travel / distance_total
+        content = f"{progress*100:2.1f}%"
+
+        if self._plotter_status == Status.Drawing:
+            # Auto-detect first pen-down movement to start the chrono
+            # (excludes SVG processing time inside execute_plot)
+            if PLOTTER.start_time == 0:
+                if ad.plot_status.stats.down_travel_inch > 0:
+                    PLOTTER.start_time = time.time()
+                else:
+                    self.progress.set_with_text(0, "loading...")
+                    return
+
+            cur_time = time.time()
+            elapsed = cur_time - PLOTTER.start_time
+            total_elapsed = elapsed + PLOTTER.pause_duration
 
             total_time_s = PLOTTER.estimated_duration
-            remaining = "-"
-            total_str = "-"
-            if PLOTTER.start_time:
-                cur_time = time.time()
 
-                elapsed = cur_time - PLOTTER.start_time
-                total_elapsed = elapsed + PLOTTER.pause_duration
+            # Correct estimate based on observed pace.
+            # Blend gradually from original to measured between 20% and 60%.
+            # At 25% only 12.5% weight on measured → stable early on.
+            if progress >= 0.20:
+                alpha = min((progress - 0.20) / 0.40, 1.0)
+                measured_total = total_elapsed / progress
+                corrected_total = (1 - alpha) * total_time_s + alpha * measured_total
+            else:
+                corrected_total = total_time_s
 
-                # Dynamically correct total estimate based on observed pace.
-                # measured_total = total_elapsed / progress is the best real-time estimate.
-                # Blend from original to measured linearly between 5% and 15% progress
-                # to avoid instability at low progress values.
-                if progress >= 0.05:
-                    alpha = min((progress - 0.05) / 0.10, 1.0)
-                    measured_total = total_elapsed / progress
-                    corrected_total = (
-                        1 - alpha
-                    ) * total_time_s + alpha * measured_total
-                else:
-                    corrected_total = total_time_s
-
-                remaining_s = corrected_total - total_elapsed
-                total_str = td_format(timedelta(seconds=corrected_total))
-
-                remaining = td_format(timedelta(seconds=remaining_s))
-
-            content = ""
+            remaining_s = corrected_total - total_elapsed
+            total_str = td_format(timedelta(seconds=corrected_total))
+            remaining = td_format(timedelta(seconds=remaining_s))
 
             if not remaining:
                 overtime = td_format(timedelta(seconds=-remaining_s))
@@ -255,14 +260,13 @@ class TracePage(ctk.CTkFrame):
             else:
                 content = f"{progress*100:2.1f}% - {remaining} / {total_str}"
 
-            remaining_time_pause = None
             if self.auto_pause_time is not None:
                 remaining_time_pause = self.auto_pause_time - time.time()
-                content += "- pause in " + td_format(
+                content += " - pause in " + td_format(
                     timedelta(seconds=remaining_time_pause)
                 )
 
-            self.progress.set_with_text(progress, content)
+        self.progress.set_with_text(progress, content)
 
     def update_status(self):
 

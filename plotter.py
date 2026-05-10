@@ -236,14 +236,17 @@ class Plotter:
 
             # self.ad.options.progress= True
             self.report = None
+            execute_start = time.time()  # internal fallback
             self.start_time = (
-                time.time()
-            )  # start chrono after loading, just before first move
+                0  # sentinel: UI thread sets this on first pen-down movement
+            )
 
             execute_plot(self.ad)
 
             end_time = time.time()
-            total_time = end_time - self.start_time
+            # prefer UI-detected start (excludes SVG processing time), fall back to execute_start
+            actual_start = self.start_time if self.start_time > 0 else execute_start
+            total_time = end_time - actual_start
             print_time = td_format(timedelta(seconds=total_time))
 
             is_paused = self.ad.plot_status.stopped == 103
