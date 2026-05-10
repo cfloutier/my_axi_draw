@@ -228,8 +228,14 @@ class TracePage(ctk.CTkFrame):
             # Auto-detect first pen-down movement to start the chrono
             # (excludes SVG processing time inside execute_plot)
             if PLOTTER.start_time == 0:
-                if ad.plot_status.stats.down_travel_inch > 0:
+                stats = ad.plot_status.stats
+                any_travel = stats.down_travel_inch + stats.up_travel_inch
+                print(
+                    f"[chrono] waiting for first move | down={stats.down_travel_inch:.6f} | up={stats.up_travel_inch:.6f} | progress={progress:.4f}"
+                )
+                if any_travel > 0:
                     PLOTTER.start_time = time.time()
+                    print(f"[chrono] START detected at {PLOTTER.start_time:.2f}")
                 else:
                     self.progress.set_with_text(0, "loading...")
                     return
