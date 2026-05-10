@@ -258,13 +258,14 @@ class TracePage(ctk.CTkFrame):
 
             remaining_s = corrected_total - total_elapsed
             total_str = td_format(timedelta(seconds=corrected_total))
+            elapsed_str = td_format(timedelta(seconds=total_elapsed))
             remaining = td_format(timedelta(seconds=remaining_s))
 
             if not remaining:
                 overtime = td_format(timedelta(seconds=-remaining_s))
-                content = f"{progress*100:2.1f}% - overtime +{overtime} / {total_str}"
+                content = f"{progress*100:2.1f}% - elapsed {elapsed_str} - overtime +{overtime} / {total_str}"
             else:
-                content = f"{progress*100:2.1f}% - {remaining} / {total_str}"
+                content = f"{progress*100:2.1f}% - elapsed {elapsed_str} - remaining {remaining} / {total_str}"
 
             if self.auto_pause_time is not None:
                 remaining_time_pause = self.auto_pause_time - time.time()

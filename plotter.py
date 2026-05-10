@@ -255,7 +255,7 @@ class Plotter:
 
             if is_paused:
                 if self._status == Status.Stopping:
-                    result = "Back Home"
+                    result = "Back Home\n"
                     self.back_home()
                 else:
                     self.pause_duration += total_time

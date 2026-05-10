@@ -5,25 +5,18 @@ def td_format(td_object: timedelta):
     seconds = int(td_object.total_seconds())
     if seconds < 0:
         return None
-    if seconds <= 1:
-        return f"{seconds}.{td_object.microseconds/10000:2.0f} ms"
-    periods = [
-        ("y", 60 * 60 * 24 * 365),
-        ("m", 60 * 60 * 24 * 30),
-        ("d", 60 * 60 * 24),
-        ("h", 60 * 60),
-        ("m", 60),
-        ("s", 1),
-    ]
 
-    strings = []
-    for period_name, period_seconds in periods:
-        if seconds > period_seconds:
-            period_value, seconds = divmod(seconds, period_seconds)
+    days, rem = divmod(seconds, 86400)
+    hours, rem = divmod(rem, 3600)
+    minutes, secs = divmod(rem, 60)
 
-            strings.append("%s %s" % (period_value, period_name))
-
-    return " ".join(strings)
+    if days > 0:
+        return f"{days}d {hours:02}:{minutes:02}:{secs:02}"
+    if hours > 0:
+        return f"{hours:02}:{minutes:02}:{secs:02}"
+    if minutes > 0:
+        return f"{minutes:02}:{secs:02}"
+    return f"{secs}s"
 
 
 # print(td_format(timedelta(seconds=1.2)))
