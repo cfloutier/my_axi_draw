@@ -89,6 +89,10 @@ pre-commit install
 
 ---
 
+## Known limitations
+
+- **Pause/resume on points-only plots (stippling, dots)**: Does not work. `axidrawinternal` tracks resume position via `down_travel_inch`, which stays at `0.0` for vertical pen-down moves with no horizontal displacement (pure dots). As a result, `crop(0)` is a no-op and the plotter always restarts from the beginning after a pause. This is a fundamental limitation of the underlying library.
+
 ## Changelog
 
 ### 2026-05-10
