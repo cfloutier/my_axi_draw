@@ -4,7 +4,6 @@ from pathlib import Path
 import time
 from typing import Union
 from globals import my_log
-from lxml import etree
 from pyaxidraw import axidraw
 from settings import SETTINGS, PLOTTER_PARAMS
 import threading
@@ -95,8 +94,6 @@ class Plotter:
 
         # cumultation duration of all pause times
         self.pause_duration = 0
-        # distance in inch to correct an ad bug in res_plot
-        self.pause_travel_in = 0
         self.status_listenners = []
 
     def set_status(self, status: Status):
@@ -166,8 +163,6 @@ class Plotter:
 
         self.set_status(Status.Homing)
 
-        if not hasattr(self.ad.document, "getroot"):
-            self.ad.document = etree.ElementTree(self.ad.document)
         self.ad.options.mode = "res_home"
         self.ad.plot_run()  # Execute the command
 
@@ -217,22 +212,14 @@ class Plotter:
 
                 # starting new run
                 self.pause_duration = 0
-                self.pause_travel_in = 0
 
                 self.ad.options.preview = False
                 self.ad.options.report_time = True  # Enable time and distance estimates
-                self.ad.options.digest = (
-                    1  # cache processed paths as plob for fast resume
-                )
                 self.ad.errors.code = 0
             else:
-                # paused - fix document type: digest=1 leaves document as lxml Element, not ElementTree
-                if not hasattr(self.ad.document, "getroot"):
-                    self.ad.document = etree.ElementTree(self.ad.document)
                 self.ad.options.mode = "res_plot"
                 self.ad.plot_status.stopped = 0
                 self.ad.errors.code = 0
-                self.pause_travel_in += self.ad.plot_status.stats.up_travel_inch
 
             # self.ad.options.progress= True
             self.report = None
@@ -259,9 +246,6 @@ class Plotter:
                     self.back_home()
                 else:
                     self.pause_duration += total_time
-
-                    print(f"cur_travel : {self.cur_travel} / {self.dist_pen_total} ")
-                    print(f"pause_travel : {self.pause_travel_in} ")
 
                     result = (
                         "----------------------- PAUSED -----------------------------\n"
@@ -300,10 +284,7 @@ class Plotter:
 
         stats = self.ad.plot_status.stats
 
-        # print(f"{stats.up_travel_inch} up + {self.pause_travel_in} saved + {stats.down_travel_inch} dn")
-        return (
-            stats.up_travel_inch + self.pause_travel_in + stats.down_travel_inch
-        ) * 2.54
+        return (stats.up_travel_inch + stats.down_travel_inch) * 2.54
 
     def preload(self, file_path: Union[Path, str]):
         # preload the svg in a thread

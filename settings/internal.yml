@@ -1,4 +1,9 @@
-auto_load_svg: C:\dev\__tracer\table\saved_svg\spiral.svg
+auto_load_svg: C:\dev\__tracer\my_axi_draw\svg_templates\grid_dots.svg
 profile_name: bic
-svg_file: C:/dev/__tracer/table/saved_svg/a3.svg
-svg_path: C:\dev\__tracer\table\saved_svg
+# svg_file: C:/dev/__tracer/table/saved_svg/a3.svg
+
+svg_file: C:\dev\__tracer\my_axi_draw\svg_templates\grid_dots.svg
+
+# svg_path: C:\dev\__tracer\table\saved_svg
+
+svg_path: C:\dev\__tracer\my_axi_draw\svg_templates
