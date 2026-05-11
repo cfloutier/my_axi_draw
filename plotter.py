@@ -4,6 +4,7 @@ from pathlib import Path
 import time
 from typing import Union
 from globals import my_log
+from lxml import etree
 from pyaxidraw import axidraw
 from settings import SETTINGS, PLOTTER_PARAMS
 import threading
@@ -164,6 +165,9 @@ class Plotter:
         self.set_status(Status.Homing)
 
         self.ad.options.mode = "res_home"
+        # digest=1 leaves document as _Element, not ElementTree — fix before plot_run
+        if not isinstance(self.ad.document, etree._ElementTree):
+            self.ad.document = etree.ElementTree(self.ad.document)
         self.ad.plot_run()  # Execute the command
 
         self.set_status(Status.Ready)
@@ -215,11 +219,15 @@ class Plotter:
 
                 self.ad.options.preview = False
                 self.ad.options.report_time = True  # Enable time and distance estimates
+                self.ad.options.digest = 1  # cache plob for fast resume
                 self.ad.errors.code = 0
             else:
                 self.ad.options.mode = "res_plot"
                 self.ad.plot_status.stopped = 0
                 self.ad.errors.code = 0
+                # digest=1 leaves document as _Element, not ElementTree — fix before plot_run
+                if not isinstance(self.ad.document, etree._ElementTree):
+                    self.ad.document = etree.ElementTree(self.ad.document)
 
             # self.ad.options.progress= True
             self.report = None
