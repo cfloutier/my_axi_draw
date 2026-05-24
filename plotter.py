@@ -301,7 +301,13 @@ class Plotter:
 
         def run_preload():
 
-            self.ad = build_plot_ad(abs_path, preview=True)
+            try:
+                self.ad = build_plot_ad(abs_path, preview=True)
+            except RuntimeError as e:
+                self.report = f"------------- Error -------------\n{e}\n{abs_path}\n---------------------------------\n"
+                self.set_status(Status.Ready)
+                return
+
             self.set_status(Status.Preview)
 
             if self.ad == None:
