@@ -14,8 +14,10 @@ import setuptools
 install_requires = [
     "pyaml>=6",
     "customtkinter>=5",
-    "coloredlogs>=15"
-    # + axidraw python api
+    "coloredlogs>=15",
+    # axidraw internal fork — install locally with: pip install -e C:\dev\__tracer\api\AxiDraw_API\axidrawinternal_whl
+    # or on other machines: pip install git+https://github.com/cfloutier/axidrawinternal.git
+    "axidrawinternal @ git+https://github.com/cfloutier/axidrawinternal.git",
 ]
 
 

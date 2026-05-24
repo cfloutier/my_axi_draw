@@ -7,7 +7,10 @@
 * [x] : resuming with options changes - pen height ok
 
 ## Known limitations
-* [ ] : pause/resume does not work for points-only plots (stippling, dots) — `axidrawinternal` tracks resume position via `down_travel_inch` which stays at 0 for vertical pen-down moves with no horizontal displacement. `crop(0)` is a no-op so the plotter always restarts from the beginning.
+* [x] : pause/resume does not work for points-only plots (stippling, dots) — fixed in fork
+  `cfloutier/axidrawinternal` branch `fix/pause-resume-dots-path-count` via `pause_count`
+  (path ordinal index as fallback resume metric when `down_travel_inch == 0`).
+  **To test on real hardware before merging to main.**
 
 ## TODO
 * [ ] : manual move ??
