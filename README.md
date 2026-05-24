@@ -89,9 +89,38 @@ pre-commit install
 
 ---
 
-## Known limitations
+## Dépendance axidrawinternal (fork)
 
-- **Pause/resume on points-only plots (stippling, dots)**: Does not work. `axidrawinternal` tracks resume position via `down_travel_inch`, which stays at `0.0` for vertical pen-down moves with no horizontal displacement (pure dots). As a result, `crop(0)` is a no-op and the plotter always restarts from the beginning after a pause. This is a fundamental limitation of the underlying library.
+Ce projet utilise un **fork personnalisé** d'`axidrawinternal` au lieu du wheel officiel AxiDraw.
+Le fork corrige le bug pause/resume pour les tracés de points et les tracés mixtes.
+
+- Repo : https://github.com/cfloutier/axidrawinternal
+- Déclaré dans `setup.py` : `axidrawinternal @ git+https://github.com/cfloutier/axidrawinternal.git`
+
+### Installation initiale
+
+Ne pas installer le wheel officiel AxiDraw (`pip install .` dans le dossier AxiDraw_API).
+À la place, installer les dépendances directement depuis `setup.py` :
+
+```powershell
+pip install -e .
+```
+
+Cela installe automatiquement `axidrawinternal` depuis le fork GitHub.
+
+### Mise à jour du fork sur une machine existante
+
+Si la machine utilise encore le wheel officiel AxiDraw, remplacer par :
+
+```powershell
+pip install --upgrade "axidrawinternal @ git+https://github.com/cfloutier/axidrawinternal.git"
+```
+
+Si `my_axi_draw` est déjà installé via `setup.py`, une mise à jour suffit :
+
+```powershell
+pip install --upgrade -e .
+```
 
 ## Changelog
 
