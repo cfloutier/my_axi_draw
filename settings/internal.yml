@@ -1,9 +1,5 @@
-auto_load_svg: C:\dev\__tracer\my_axi_draw\svg_templates\grid_dots.svg
+auto_load_svg: svg_templates\grid_dots.svg
+last_folder: C:\dev\__tracer\processing\perlin_mountains\Export
 profile_name: bic
-# svg_file: C:/dev/__tracer/table/saved_svg/a3.svg
-
-svg_file: C:\dev\__tracer\my_axi_draw\svg_templates\grid_dots.svg
-
-# svg_path: C:\dev\__tracer\table\saved_svg
-
-svg_path: C:\dev\__tracer\my_axi_draw\svg_templates
+svg_file: svg_templates\grid_dots.svg
+svg_path: sources_svg

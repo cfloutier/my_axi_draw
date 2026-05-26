@@ -1,10 +1,11 @@
 from datetime import timedelta
 from enum import Enum
+from pathlib import Path
 import customtkinter as ctk
 import time
 import tkinter
 from globals import my_log
-from settings import INTERNAL_SETTINGS
+from settings import DEFAULT_SVG_FOLDER, INTERNAL_SETTINGS
 from plotter import PLOTTER, Status
 from tools.ctk.base_frame import BaseFrame
 from tools.ctk.progress_bar import ProgressBar
@@ -113,11 +114,16 @@ class TracePage(ctk.CTkFrame):
 
     def load_svg(self, filename=None):
         if not filename:
+            last = INTERNAL_SETTINGS.last_folder
+            initialdir = last if last and Path(last).exists() else DEFAULT_SVG_FOLDER
             filename = ctk.filedialog.askopenfilename(
-                initialdir=INTERNAL_SETTINGS.svg_path,
+                initialdir=initialdir,
                 defaultextension=".svg",
                 filetypes=(("svg file", "*.svg"), ("All files", "*.*")),
             )
+            if filename:
+                INTERNAL_SETTINGS.last_folder = str(Path(filename).parent)
+                INTERNAL_SETTINGS.save()
 
         if filename:
             self._report("Loading in progress\n")

@@ -45,10 +45,16 @@ class BaseSettings:
         return str(self.__dict__)
 
 
+DEFAULT_SVG_FOLDER = (Path(__file__).parent / "svg_templates").resolve()
+
+
 class InternalSettings(BaseSettings):
     """
     settings used only for this app, file names, current pen profile
     """
+
+    _ROOT = Path(__file__).parent
+    _PATH_KEYS = {"svg_file", "auto_load_svg", "svg_path", "last_folder"}
 
     def __init__(self) -> None:
         # the current loaded file
@@ -57,9 +63,28 @@ class InternalSettings(BaseSettings):
 
         self.svg_path = (Path(__file__).parent / "sources_svg").resolve()
         self.auto_load_svg = None
+        self.last_folder = None
+
+    def load(self):
+        super().load()
+        for key in self._PATH_KEYS:
+            val = getattr(self, key, None)
+            if val and not Path(val).is_absolute():
+                setattr(self, key, str((self._ROOT / val).resolve()))
 
     def save(self):
+        originals = {}
+        for key in self._PATH_KEYS:
+            val = getattr(self, key, None)
+            if val:
+                originals[key] = val
+                try:
+                    setattr(self, key, str(Path(val).relative_to(self._ROOT)))
+                except ValueError:
+                    pass  # chemin hors du projet → gardé absolu
         self._save("internal")
+        for key, val in originals.items():
+            setattr(self, key, val)
 
     def _file_path(self, name=None):
         return super()._file_path("internal")
