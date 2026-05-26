@@ -230,34 +230,38 @@ class TracePage(ctk.CTkFrame):
         progress = total_travel / distance_total
         content = f"{progress*100:2.1f}%"
 
-        if self._plotter_status == Status.Drawing:
-            # Auto-detect first pen-down movement to start the chrono
-            # (excludes SVG processing time inside execute_plot)
-            if PLOTTER.start_time == 0:
-                stats = ad.plot_status.stats
-                any_travel = stats.down_travel_inch + stats.up_travel_inch
-                print(
-                    f"[chrono] waiting for first move | down={stats.down_travel_inch:.6f} | up={stats.up_travel_inch:.6f} | progress={progress:.4f}"
-                )
-                if any_travel > 0:
-                    PLOTTER.start_time = time.time()
-                    print(f"[chrono] START detected at {PLOTTER.start_time:.2f}")
-                else:
-                    self.progress.set_with_text(0, "loading...")
-                    return
+        if self._plotter_status in (Status.Drawing, Status.Paused):
+            if self._plotter_status == Status.Drawing:
+                # Auto-detect first movement to start the chrono
+                # (excludes SVG processing time inside execute_plot)
+                if PLOTTER.start_time == 0:
+                    stats = ad.plot_status.stats
+                    any_travel = stats.down_travel_inch + stats.up_travel_inch
+                    if any_travel > 0:
+                        PLOTTER.start_time = time.time()
+                    else:
+                        self.progress.set_with_text(0, "loading...")
+                        return
 
-            cur_time = time.time()
-            elapsed = cur_time - PLOTTER.start_time
-            total_elapsed = elapsed + PLOTTER.pause_duration
+                cur_time = time.time()
+                elapsed = cur_time - PLOTTER.start_time
+                total_elapsed = elapsed + PLOTTER.pause_duration
+            else:
+                # Paused: all elapsed time is already accumulated in pause_duration
+                total_elapsed = PLOTTER.pause_duration
 
             total_time_s = PLOTTER.estimated_duration
 
             # Correct estimate based on observed pace.
-            # Blend gradually from original to measured between 20% and 60%.
-            # At 25% only 12.5% weight on measured → stable early on.
-            if progress >= 0.20:
-                alpha = min((progress - 0.20) / 0.40, 1.0)
+            # Only start after 50% to avoid early noise (pen overhead, accel, dense dots, etc.).
+            # Clamp measured_total to ±20% of original as a safety net against outliers.
+            # alpha goes from 0 (50%) to 1.0 (100%): fully trust measured at the end.
+            if progress >= 0.5:
                 measured_total = total_elapsed / progress
+                measured_total = max(
+                    total_time_s * 0.8, min(total_time_s * 1.2, measured_total)
+                )
+                alpha = (progress - 0.5) * 2.0  # 0.0 at 50%, 1.0 at 100%
                 corrected_total = (1 - alpha) * total_time_s + alpha * measured_total
             else:
                 corrected_total = total_time_s
@@ -273,7 +277,10 @@ class TracePage(ctk.CTkFrame):
             else:
                 content = f"{progress*100:2.1f}% - elapsed {elapsed_str} - remaining {remaining} / {total_str}"
 
-            if self.auto_pause_time is not None:
+            if (
+                self._plotter_status == Status.Drawing
+                and self.auto_pause_time is not None
+            ):
                 remaining_time_pause = self.auto_pause_time - time.time()
                 content += " - pause in " + td_format(
                     timedelta(seconds=remaining_time_pause)

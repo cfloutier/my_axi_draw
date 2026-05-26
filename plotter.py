@@ -95,6 +95,8 @@ class Plotter:
 
         # cumultation duration of all pause times
         self.pause_duration = 0
+        # up_travel_inch is reset by the lib on each resume; accumulate it manually
+        self.pause_up_travel_inch = 0.0
         self.status_listenners = []
 
     def set_status(self, status: Status):
@@ -205,7 +207,15 @@ class Plotter:
             self.set_status(Status.Drawing)
 
             if not self.ad:
-                # not paused
+                # not paused — refresh time estimate with current settings before plotting
+                preview_ad = build_plot_ad(abs_path, preview=True)
+                if preview_ad:
+                    preview_ad.options.preview = True
+                    preview_ad.options.report_time = False
+                    preview_ad.options.digest = 1  # use/build plob cache for speed
+                    preview_ad.plot_run()
+                    self.estimated_duration = preview_ad.time_estimate
+
                 self.ad = build_plot_ad(abs_path)
                 if self.ad == None:
 
@@ -216,12 +226,16 @@ class Plotter:
 
                 # starting new run
                 self.pause_duration = 0
+                self.pause_up_travel_inch = 0.0
 
                 self.ad.options.preview = False
                 self.ad.options.report_time = True  # Enable time and distance estimates
                 self.ad.options.digest = 1  # cache plob for fast resume
                 self.ad.errors.code = 0
             else:
+                # resume from pause — save up_travel_inch before the lib resets it on plot_run
+                self.pause_up_travel_inch += self.ad.plot_status.stats.up_travel_inch
+
                 self.ad.options.mode = "res_plot"
                 self.ad.plot_status.stopped = 0
                 self.ad.errors.code = 0
@@ -292,7 +306,9 @@ class Plotter:
 
         stats = self.ad.plot_status.stats
 
-        return (stats.up_travel_inch + stats.down_travel_inch) * 2.54
+        return (
+            stats.up_travel_inch + stats.down_travel_inch + self.pause_up_travel_inch
+        ) * 2.54
 
     def preload(self, file_path: Union[Path, str]):
         # preload the svg in a thread
