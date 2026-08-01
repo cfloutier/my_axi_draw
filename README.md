@@ -7,7 +7,7 @@ Load an SVG file, preview the estimated drawing duration, and control execution 
 
 ## Project structure
 
-```
+```md
 main_ui.py          # Entry point — main window with tabs
 plotter.py          # Plotter control logic (state machine, threading)
 settings.py         # Settings management (YAML profiles, hardware params)
@@ -47,7 +47,7 @@ AxiDraw_API/        # Local PyAxiDraw API (v3.9.6)
 ## Installation
 
 - Install Python
-- Install the AxiDraw API: https://axidraw.com/doc/py_api
+- Install the AxiDraw API: <https://axidraw.com/doc/py_api>
   - Download and unzip into a local folder `[AXIDRAW_FOLDER]`
   - Follow the included `Installation.txt`
 
@@ -94,7 +94,7 @@ pre-commit install
 Ce projet utilise un **fork personnalisé** d'`axidrawinternal` au lieu du wheel officiel AxiDraw.
 Le fork corrige le bug pause/resume pour les tracés de points et les tracés mixtes.
 
-- Repo : https://github.com/cfloutier/axidrawinternal
+- Repo : <https://github.com/cfloutier/axidrawinternal>
 - Déclaré dans `setup.py` : `axidrawinternal @ git+https://github.com/cfloutier/axidrawinternal.git`
 
 ### Installation initiale
