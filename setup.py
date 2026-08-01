@@ -5,7 +5,6 @@ Based on https://github.com/pypa/sampleproject
 
 # Always prefer setuptools over distutils
 import pathlib
-import re
 import setuptools
 
 # install_requires is dynamically created (below) and therefore cannot easily be

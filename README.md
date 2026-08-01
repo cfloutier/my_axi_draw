@@ -125,6 +125,7 @@ pip install --upgrade -e .
 ## Changelog
 
 ### 2026-05-10
+
 - **Affichage du temps écoulé** : la barre de progression affiche maintenant simultanément le temps écoulé, le temps restant et le total (`XX.X% - elapsed 01:42 - remaining 03:15 / 04:57`).
 - **Format de durée condensé** : `td_format` utilise désormais le format `HH:MM:SS` / `MM:SS` / `Xs` / `Nd HH:MM:SS` selon la magnitude, sans redondance ni unités textuelles.
 - **Chrono démarré au premier mouvement** : le compteur de temps démarre maintenant au premier déplacement moteur détecté (stylo haut ou bas), excluant le temps de chargement et de parsing SVG. Pendant cette phase initiale, la barre affiche `"loading..."`.
@@ -133,10 +134,12 @@ pip install --upgrade -e .
 - **Affichage du dépassement** : quand le temps estimé est dépassé, affiche `elapsed XX:XX - overtime +MM:SS / total` au lieu d'une valeur négative.
 
 ### 2026-05-09
+
 - **Fast resume after pause**: enabled plob cache (`digest=1`) at draw start. The AxiDraw lib stores processed paths as a simplified format (polylines) after the first pass. On resume, the document is recognized as a valid plob and `prepare_document()` is skipped — resuming is near-instant regardless of SVG complexity.
 - **Fix crash on resume**: `digest=1` left `document` as `lxml.etree._Element` instead of `ElementTree`, causing a crash on `document.getroot()`. Fixed before each `plot_run()` call on a paused object (`back_home` and `res_plot`).
 
 ### Earlier
+
 - Fixed remaining time not adjusted during pauses
 - Fixed UI layout issues
 - Fixed progress bar text rendering
